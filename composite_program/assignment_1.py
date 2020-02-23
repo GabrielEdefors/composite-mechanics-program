@@ -7,7 +7,7 @@ filepath = Path.cwd().joinpath('input', filename)
 
 laminate = read_input_file(filepath)
 
-print(laminate.laminae[0].v_LT)
+print(laminate.laminae[1].T1)
 
 
 

@@ -68,9 +68,9 @@ def read_input_file(filename):
 
         # Assign material instances to the laina
         for material in materials:
-            if getattr(material, 'index') == int(properties[2]):
+            if getattr(material, 'index') == int(properties[3]):
                 matrix_material = material
-            elif getattr(material, 'index') == int(properties[3]):
+            elif getattr(material, 'index') == int(properties[2]):
                 fibre_material = material
             else:
                 print('Must specify a valid material for matrix and fibres')
