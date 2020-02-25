@@ -12,33 +12,49 @@ class Lamina:
                :param fibre_material: Material instance used for the fibres
                :type fibre_material: Instance of Material
 
+               :ivar E_L: Longitudinal Stiffness of lamina
+               :ivar E_T: Transverse stiffness of lamina
+               :ivar v_LT: Poisson ratio relative longitudinal loading
+               :ivar G_LT: Shear stiffness of lamina
+               :ivar alpha_L: Thermal coefficient in transverse direction
+               :ivar alpha_T: Thermal coefficient in longitudinal direction
+               :ivar S_local: Local compliance tensor
+               :ivar S_global: Global compliance tensor
+               :ivar Q_local: Local stiffness tensor
+               :ivar Q_global: Global stiffness tensor
+               :ivar T1: Transformation matrix for stress
+               :ivar T2: Transformation matrix for strain
      """
+
     # Halpin Tsai parameters
     KSI_T = 2
     KSI_G = 1
 
-    def __init__(self, index, thickness, matrix_material, fibre_material, volume_fraction, angle):
+    def __init__(self, index, thickness, matrix_material, fibre_material, volume_fraction, angle, coordinates):
         self.index = index
         self.thickness = thickness
         self.matrix_material = matrix_material
         self.fibre_material = fibre_material
         self.volume_fraction = volume_fraction
         self.angle = angle
+        self.coordinates = coordinates
 
         # Composite properties
-        self.E_L, self.E_T, self.v_LT, self.v_TL, self.G_LT, self.alpha_L, self.alpha_T = self.composite_properties()
+        self.E_L, self.E_T, self.v_LT, self.v_TL, self.G_LT, self.alpha_L, self.alpha_T = self.compute_composite_properties()
 
         # Transformation matrices
         self.T1, self.T2 = self.compute_transformation_matrices()
 
         # Compliance and stiffness tensors
-        #self.S_global,self.S_local, self.Q_global, self.Q_local = self.compute_constitutive_matrices()
+        self.S_global, self.S_local, self.Q_global, self.Q_local = self.compute_constitutive_matrices()
 
-    def composite_properties(self):
+    def compute_composite_properties(self):
         """Computes the composite properties of the lamina using the properties of the constituents.
 
             Theory based on rules of mixtures, Halpin Tsai and inverse rule of mixtures
 
+              :returns: E_L, E_T, v_LT, v_TL, G_LT, alpha_L, alpha_T
+              :rtype: Tuple of floats
          """
 
         # Define local variables for shorter notation
@@ -72,6 +88,11 @@ class Lamina:
         return E_L, E_T, v_LT, v_TL, G_LT, alpha_L, alpha_T
 
     def compute_transformation_matrices(self):
+        """Computes the coordinate transformation matrices for stress and strain tensors
+
+              :returns: T_1(ndarray(dtype=float, ndim=2)), T_2(ndarray(dtype=float, ndim=2))
+         """
+
         m = np.cos(np.deg2rad(self.angle))
         n = np.sin(np.deg2rad(self.angle))
 
@@ -87,11 +108,25 @@ class Lamina:
 
         return T1, T2
 
-
     def compute_constitutive_matrices(self):
-        a = 1
+        """Computes the compliance and stiffness tensors in both lamina and laminate coordinates
 
+              :returns: S_global(ndarray(dtype=float, ndim=2)), S_local(ndarray(dtype=float, ndim=2)),
+                        Q_global(ndarray(dtype=float, ndim=2)), Q_local(ndarray(dtype=float, ndim=2))
+         """
 
+        # Compliance tensors
+        S_local = np.array([[1 / self.E_L, -self.v_LT / self.E_L, 0],
+                           [-self.v_LT / self.E_L, 1 / self.E_T, 0],
+                           [0,             0,        1 / self.G_LT]],)
+
+        S_global = np.linalg.multi_dot([np.linalg.inv(self.T1), S_local, self.T2])
+
+        # Stiffness tensors
+        Q_local = np.linalg.inv(S_local)
+        Q_global = np.linalg.multi_dot([np.linalg.inv(self.T1), Q_local, self.T2])
+
+        return S_global, S_local, Q_global, Q_local
 
 
 

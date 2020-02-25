@@ -4,7 +4,7 @@ import composite
 def replace_characters(string):
     """Clean string by replacing characters with empty string.
 
-              :param string:  string to be stripped
+              :param string: string to be stripped
               :param string: string
               :returns: string_stripped
               :rtype: string
@@ -75,8 +75,16 @@ def read_input_file(filename):
             else:
                 print('Must specify a valid material for matrix and fibres')
 
+        # Lamina top and bottom coordinates relative bottom of bottom ply
+        if int(lamina_index) == 1:
+            z1 = 0
+            z2 = thickness
+        else:
+            z1 = z2
+            z2 += thickness
+
         laminae.append(composite.Lamina(int(lamina_index), thickness, matrix_material,
-                                fibre_material, volume_fraction, angle))
+                                fibre_material, volume_fraction, angle, (z1, z2)))
 
     # Create an instance of composite.Laminate with the composite.Laminae
     laminate = composite.Laminate(laminae)
