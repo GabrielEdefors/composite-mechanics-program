@@ -8,7 +8,9 @@ Classes:
 """
 version = "1.0.0"
 
-from . lamina import Lamina
+from . lamina import Lamina, LocalLaminaProperties, GlobalLaminaProperties, StressState
 from . laminate import Laminate
 from . parser import read_input_file
 from . material import Material
+from . plot_tools import plot_stress
+

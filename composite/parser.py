@@ -1,4 +1,5 @@
 import composite
+from pathlib import Path
 
 
 def replace_characters(string):
@@ -22,12 +23,13 @@ def read_input_file(filename):
                  :rtype: Instance of composite.Laminate
 
        """
+    filepath = Path.cwd().joinpath('input', filename)
 
     # Initiate empty dictionary that can store the data
     input_data = {}
 
     # Load input file
-    with open(filename, 'r') as file:
+    with open(filepath, 'r') as file:
         for line in file:
             if line.strip() and '%%' not in line:
                 line = replace_characters(line)
@@ -84,7 +86,11 @@ def read_input_file(filename):
             z2 += thickness
 
         laminae.append(composite.Lamina(int(lamina_index), thickness, matrix_material,
-                                fibre_material, volume_fraction, angle, (z1, z2)))
+                                fibre_material, volume_fraction, angle, [z1, z2]))
+
+    for lamina in laminae:
+        lamina.coordinates[0] -= z2 / 2
+        lamina.coordinates[1] -= z2 / 2
 
     # Create an instance of composite.Laminate with the composite.Laminae
     laminate = composite.Laminate(laminae)

@@ -1,5 +1,6 @@
 import numpy as np
 
+
 class Laminate:
     """Class used to represent the laminate.
 
@@ -51,11 +52,43 @@ class Laminate:
 
         for lamina in self.laminae:
 
-            A += lamina.Q_global.dot(lamina.coordinates[1] - lamina.coordinates[0])
-            B += 1/2 * lamina.Q_global.dot(lamina.coordinates[1] ** 2 - lamina.coordinates[0] ** 2)
-            D += 1/3 * lamina.Q_global.dot(lamina.coordinates[1] ** 3 - lamina.coordinates[0] ** 3)
+            A += lamina.global_properties.Ak
+            B += lamina.global_properties.Bk
+            D += lamina.global_properties.Dk
 
         return A, B, D
+
+    def compute_thermal_stresses(self):
+
+        # Compute thermal forces and moments
+        thermal_normal_forces = np.zeros(shape=(3, 1))
+        thermal_moments = np.zeros(shape=(3, 1))
+
+        for lamina in self.laminae:
+
+            thermal_normal_forces += self.delta_T * lamina.global_properties.Ak.dot(lamina.global_properties.alpha)
+            thermal_moments += self.delta_T * lamina.global_properties.Bk.dot(lamina.global_properties.alpha)
+
+        # Calculate the mid-plane strains caused by the thermal forces and moments
+        thermal_load_vector = np.array([thermal_normal_forces, thermal_moments]).reshape(6, 1)
+        total_stiffness_matrix = np.concatenate([np.concatenate((self.A, self.B), axis=1), np.concatenate((self.B, self.D), axis=1)])
+        midplane_strains = np.linalg.solve(total_stiffness_matrix, thermal_load_vector)
+
+        # Compute mechanical strains caused by the thermal loads
+        mechanical_stress_global = np.zeros((3, len(self.laminae) * 2))
+        mechanical_stress_local = np.zeros((3, len(self.laminae) * 2))
+        z_coordinates = np.zeros((len(self.laminae) * 2))
+
+        for index, lamina in enumerate(self.laminae):
+
+            lamina.stress.compute_mechanical_strains(midplane_strains[:3], midplane_strains[3:], self.delta_T)
+            mechanical_stress_global[:, (2*index):(2*index+2)], mechanical_stress_local[:, (2*index):(2*index+2)] = lamina.stress.compute_mechanical_stress()
+            z_coordinates[2*index], z_coordinates[2*index+1] = lamina.coordinates
+
+        return mechanical_stress_global, mechanical_stress_local, z_coordinates
+
+
+
 
 
 

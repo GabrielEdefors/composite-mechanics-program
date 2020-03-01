@@ -1,5 +1,6 @@
 import numpy as np
 
+
 class Lamina:
     """Class used to represent a lamina in a laminate
 
@@ -18,10 +19,8 @@ class Lamina:
                :ivar G_LT: Shear stiffness of lamina
                :ivar alpha_L: Thermal coefficient in transverse direction
                :ivar alpha_T: Thermal coefficient in longitudinal direction
-               :ivar S_local: Local compliance tensor
-               :ivar S_global: Global compliance tensor
-               :ivar Q_local: Local stiffness tensor
-               :ivar Q_global: Global stiffness tensor
+               :ivar local_properties: Instance of LocalLaminaProperties
+               :ivar global_properties: Instance of GlobalLaminaProperties
                :ivar T1: Transformation matrix for stress
                :ivar T2: Transformation matrix for strain
      """
@@ -39,14 +38,18 @@ class Lamina:
         self.angle = angle
         self.coordinates = coordinates
 
-        # Composite properties
+        # Homogenised properties
         self.E_L, self.E_T, self.v_LT, self.v_TL, self.G_LT, self.alpha_L, self.alpha_T = self.compute_composite_properties()
 
         # Transformation matrices
         self.T1, self.T2 = self.compute_transformation_matrices()
 
-        # Compliance and stiffness tensors
-        self.S_global, self.S_local, self.Q_global, self.Q_local = self.compute_constitutive_matrices()
+        # Create one instance with local properties and one with global properties
+        self.local_properties = LocalLaminaProperties(self)
+        self.global_properties = GlobalLaminaProperties(self)
+
+        # Create an instance with the stress state of the lamina
+        self.stress = StressState(self)
 
     def compute_composite_properties(self):
         """Computes the composite properties of the lamina using the properties of the constituents.
@@ -96,41 +99,141 @@ class Lamina:
         m = np.cos(np.deg2rad(self.angle))
         n = np.sin(np.deg2rad(self.angle))
 
-        # For stress tensor
+        # For stress matrix
         T1 = np.array([[m**2, n**2, 2*m*n],
                       [n**2, m**2, -2*m*n],
                       [-m*n, m*n, m**2 - n**2]])
 
-        # For strain tensor
+        # For strain matrix
         T2 = np.array([[m**2, n**2, m*n],
                       [n**2, m**2, -m*n],
                       [-2*m*n, 2*m*n, m**2 - n**2]])
 
         return T1, T2
 
-    def compute_constitutive_matrices(self):
-        """Computes the compliance and stiffness tensors in both lamina and laminate coordinates
 
-              :returns: S_global(ndarray(dtype=float, ndim=2)), S_local(ndarray(dtype=float, ndim=2)),
-                        Q_global(ndarray(dtype=float, ndim=2)), Q_local(ndarray(dtype=float, ndim=2))
+class LocalLaminaProperties:
+    """Class used to represent the local properties of a lamina
+
+                   :param lamina: Parent lamina
+                   :type lamina: Instance of Lamina
+                   :ivar S: Compliance matrix
+                   :ivar Q: Stiffness matrix
+    """
+
+    def __init__(self, lamina):
+        self.lamina = lamina
+        self.S, self.Q = self.compute_constitutive_matrices()
+
+    def compute_constitutive_matrices(self):
+        """Computes the compliance and stiffness tensors in local coordinate system
+
+              :returns: Q(ndarray(dtype=float, ndim=2)), S(ndarray(dtype=float, ndim=2)),
          """
 
-        # Compliance tensors
-        S_local = np.array([[1 / self.E_L, -self.v_LT / self.E_L, 0],
-                           [-self.v_LT / self.E_L, 1 / self.E_T, 0],
-                           [0,             0,        1 / self.G_LT]],)
+        # Compliance matrix
+        S = np.array([[1 / self.lamina.E_L, -self.lamina.v_LT / self.lamina.E_L, 0],
+                            [-self.lamina.v_LT / self.lamina.E_L, 1 / self.lamina.E_T, 0],
+                            [0, 0, 1 / self.lamina.G_LT]], )
 
-        S_global = np.linalg.multi_dot([np.linalg.inv(self.T1), S_local, self.T2])
+        # Stiffness matrix
+        Q = np.linalg.inv(S)
 
-        # Stiffness tensors
-        Q_local = np.linalg.inv(S_local)
-        Q_global = np.linalg.multi_dot([np.linalg.inv(self.T1), Q_local, self.T2])
-
-        return S_global, S_local, Q_global, Q_local
+        return S, Q
 
 
+class GlobalLaminaProperties:
+    """Class used to represent the global properties of a lamina
+
+                   :param lamina: Parent lamina
+                   :type lamina: Instance of Lamina
+                   :ivar S: Compliance matrix
+    """
+
+    def __init__(self, lamina):
+        self.lamina = lamina
+        self.S, self.Q = self.compute_constitutive_matrices()
+
+        # Thermal coefficients
+        alpha_local = np.array([self.lamina.alpha_L, self.lamina.alpha_T, 0]).reshape(3, 1)
+        self.alpha = np.linalg.inv(self.lamina.T2).dot(alpha_local)
+
+        # Contributions to extension, bending and coupling matrix
+        self.Ak = self.Q.dot(self.lamina.coordinates[1] - self.lamina.coordinates[0])
+        self.Bk = 1 / 2 * self.Q.dot(self.lamina.coordinates[1] ** 2 - self.lamina.coordinates[0] ** 2)
+        self.Dk = 1 / 3 * self.Q.dot(self.lamina.coordinates[1] ** 3 - self.lamina.coordinates[0] ** 3)
+
+    def compute_constitutive_matrices(self):
+        """Computes the compliance and stiffness tensors in local coordinate system
+
+              :returns: Q(ndarray(dtype=float, ndim=2)), S(ndarray(dtype=float, ndim=2)),
+         """
+
+        # Compliance matrix
+        S = np.linalg.multi_dot([np.linalg.inv(self.lamina.T1), self.lamina.local_properties.S, self.lamina.T2])
+
+        # Stiffness matrix
+        Q = np.linalg.multi_dot([np.linalg.inv(self.lamina.T1), self.lamina.local_properties.Q, self.lamina.T2])
+
+        return S, Q
 
 
+class StressState:
+    """Class used to represent the stress state of a lamina
 
+                       :param lamina: Parent lamina
+                       :type lamina: Instance of Lamina
+                       :ivar mechanical_strains_global: Array containing strain components in order x, y, xy
+                       :ivar mechanical_stress_global: Array containing stress components in order x, y, xy
+                       :ivar mechanical_strains_local: Array containing strain components in order x, y, xy
+                       :ivar mechanical_stress_local: Array containing stress components in order x, y, xy
+        """
 
+    def __init__(self, lamina):
+        self.lamina = lamina
+        self.mechanical_strains_global = np.zeros((3, 2))
+        self.mechanical_stress_global = np.zeros((3, 2))
+        self.mechanical_strains_local = np.zeros((3, 2))
+        self.mechanical_stress_local = np.zeros((3, 2))
+
+    def compute_mechanical_strains(self, midplane_strains, curvatures, delta_T):
+        """Computes the mechanical strains caused by change in temperature delta_T
+
+              :param midplane_strains: Contains strain components in order x, y, xy
+              :type midplane_strains: ndarray(dtype=float, ndim=1)
+              :param curvatures: Contains curvature components in order x, y, xy
+              :type curvatures: ndarray(dtype=float, ndim=1)
+              :param delta_T: Temperature difference
+              :type delta_T: float
+
+         """
+
+        self.mechanical_strains_global[:, 0, np.newaxis] = midplane_strains + self.lamina.coordinates[0] * curvatures -\
+                                                           self.lamina.global_properties.alpha * delta_T
+
+        self.mechanical_strains_global[:, 1, np.newaxis] = midplane_strains + self.lamina.coordinates[1] * curvatures -\
+                                                           self.lamina.global_properties.alpha * delta_T
+
+    def compute_mechanical_stress(self):
+        """Computes the mechanical stress caused by change in temperature delta_T
+
+              :returns: mechanical_stress_global(ndarray(dtype=float, ndim=1)),
+                        mechanical_strains_global(ndarray(dtype=float, ndim=1))
+
+         """
+
+        # Calculate stresses corresponding to strains
+        self.mechanical_stress_global[:, 0, np.newaxis] = \
+            self.lamina.global_properties.Q.dot(self.mechanical_strains_global[:, 0, np.newaxis])
+
+        self.mechanical_stress_global[:, 1, np.newaxis] = \
+            self.lamina.global_properties.Q.dot(self.mechanical_strains_global[:, 1, np.newaxis])
+
+        self.mechanical_stress_local[:, 0, np.newaxis] = \
+            self.lamina.T1.dot(self.mechanical_stress_global[:, 0, np.newaxis])
+
+        self.mechanical_stress_local[:, 1, np.newaxis] = \
+            self.lamina.T1.dot(self.mechanical_stress_global[:, 1, np.newaxis])
+
+        return self.mechanical_stress_global, self.mechanical_stress_local
 
