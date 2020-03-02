@@ -62,6 +62,7 @@ def read_input_file(filename):
 
     # Create list for storing composite.Laminae
     laminae = []
+    laminae_properties = []
 
     for lamina_index, properties in lamina_data.items():
         thickness = properties[0]
@@ -85,12 +86,13 @@ def read_input_file(filename):
             z1 = z2
             z2 += thickness
 
-        laminae.append(composite.Lamina(int(lamina_index), thickness, matrix_material,
+        laminae_properties.append((int(lamina_index), thickness, matrix_material,
                                 fibre_material, volume_fraction, angle, [z1, z2]))
 
-    for lamina in laminae:
-        lamina.coordinates[0] -= z2 / 2
-        lamina.coordinates[1] -= z2 / 2
+    for lamina_properties in laminae_properties:
+        lamina_properties[6][0] -= z2/2
+        lamina_properties[6][1] -= z2 / 2
+        laminae.append(composite.Lamina(*lamina_properties))
 
     # Create an instance of composite.Laminate with the composite.Laminae
     laminate = composite.Laminate(laminae)
