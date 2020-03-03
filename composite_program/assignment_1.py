@@ -1,9 +1,9 @@
-from composite import read_input_file, plot_stress
+from composite import read_input_file, plot_stress, FilePrint
 import matplotlib.pyplot as plt
 
 # Read input file
 filename = 'assignment_1.txt'
-laminate = read_input_file(filename)
+laminate, project_info = read_input_file(filename)
 
 # Thermal stresses =====================================================================================================
 thermal_stresses_global, thermal_stresses_local, z_coordinates = laminate.compute_thermal_stresses()
@@ -40,6 +40,11 @@ fig_local.suptitle('Local stresses in laminate', fontsize=16)
 plot_stress(axes=axes_local, coordinates=[z_coordinates / 1e3, 'm'], stress=[total_stresses_local / 1e6, 'MPa'],
             stresstype='local')
 
-plt.show()
+# plt.show()
+
+# Write results to file ================================================================================================
+filename = 'stress'
+printobj = FilePrint(filename)
+printobj.write_to_file()
 
 

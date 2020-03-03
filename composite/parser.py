@@ -19,7 +19,7 @@ def read_input_file(filename):
 
                  :param filename: Input file
                  :type filename: Text file
-                 :return: composite.Laminate instance
+                 :return: composite.Laminate instance, project_name
                  :rtype: Instance of composite.Laminate
 
        """
@@ -31,7 +31,7 @@ def read_input_file(filename):
     # Load input file
     with open(filepath, 'r') as file:
         for line in file:
-            if line.strip() and '%%' not in line:
+            if line.strip() and '#' not in line:
                 line = replace_characters(line)
 
                 if line[0] == '*':
@@ -43,7 +43,7 @@ def read_input_file(filename):
                         input_data[key][sub_key] = []
                     else:
                         if key == 'PROJECT_INFO':
-                            input_data[key][sub_key].append(line.split(','))
+                            input_data[key][sub_key].append(line)
                         else:
                             [input_data[key][sub_key].append(float(num)) for num in line.split(',')]
 
@@ -109,5 +109,7 @@ def read_input_file(filename):
         else:
             print('Unsupported load type')
 
-    return laminate
+    project_info = input_data['PROJECT_INFO']
+
+    return laminate, project_info
 

@@ -46,6 +46,11 @@ class Laminate:
             self.delta_T = loads['delta_T'][0]
 
     def compute_stiffness_matrices(self):
+        """Computes A, B and D matrices
+
+              :returns: (A, B, D), of type (ndarray(dtype=float, ndim=2)),
+
+         """
 
         A = np.zeros(shape=(3, 3))
         B = np.zeros(shape=(3, 3))
@@ -60,8 +65,15 @@ class Laminate:
         return A, B, D
 
     def compute_thermal_stresses(self):
+        """Computes thermal stresses and corresponding z coordinates
 
-        # Compute thermal forces and moments
+              :returns: mechanical_stress_global(ndarray(dtype=float, ndim=2),
+                        mechanical_stress_local(ndarray(dtype=float, ndim=2),
+                        z_coordinates(ndarray(dtype=float, ndim=1)
+
+         """
+
+        # Compute thermal forces and moments ===========================================================================
         thermal_normal_forces = np.zeros(shape=(3, 1))
         thermal_moments = np.zeros(shape=(3, 1))
 
@@ -70,11 +82,11 @@ class Laminate:
             thermal_normal_forces += self.delta_T * lamina.global_properties.Ak.dot(lamina.global_properties.alpha)
             thermal_moments += self.delta_T * lamina.global_properties.Bk.dot(lamina.global_properties.alpha)
 
-        # Calculate the mid-plane strains caused by the thermal forces and moments
+        # Calculate the mid-plane strains caused by the thermal forces and moments =====================================
         self.thermal_load_vector = np.array([thermal_normal_forces, thermal_moments]).reshape(6, 1)
         midplane_strains, curvatures = self.compute_strains(self.thermal_load_vector)
 
-        # Compute mechanical stress caused by the thermal loads
+        # Compute mechanical stress caused by the thermal loads ========================================================
         mechanical_stress_global = np.zeros((3, len(self.laminae) * 2))
         mechanical_stress_local = np.zeros((3, len(self.laminae) * 2))
         z_coordinates = np.zeros((len(self.laminae) * 2))
@@ -90,6 +102,13 @@ class Laminate:
         return mechanical_stress_global, mechanical_stress_local, z_coordinates
 
     def compute_total_stress(self):
+        """Computes the total stress caused by both thermal and outer loading
+
+              :returns: mechanical_stress_global(ndarray(dtype=float, ndim=2),
+                        mechanical_stress_local(ndarray(dtype=float, ndim=2),
+                        z_coordinates(ndarray(dtype=float, ndim=1)
+
+         """
 
         # Convert load vectors to numpy arrays
         normal_forces, moments = np.array(self.normal_forces).reshape(3, 1), np.array(self.moments).reshape(3, 1)
@@ -113,8 +132,16 @@ class Laminate:
 
         return mechanical_stress_global, mechanical_stress_local, z_coordinates
 
-
     def compute_strains(self, loads):
+        """Computes strains for a certain outer load specified by loads
+
+            :param loads: Load vector containing N and M
+            :type loads: ndarray(dtype=float, ndim=1
+
+              :returns: midplane_strains(ndarray(dtype=float, ndim=1),
+                        curvatures(ndarray(dtype=float, ndim=1),
+
+         """
 
         total_stiffness_matrix = np.concatenate([np.concatenate((self.A, self.B), axis=1), np.concatenate((self.B, self.D), axis=1)])
         strains = np.linalg.solve(total_stiffness_matrix, loads)

@@ -1,40 +1,42 @@
-%% Input file for composite program
-%% NOTE: Lines containing %% or whitespaces will not be parsed
+# Input file for composite program
+# NOTE: Lines containing # or whitespaces will not be parsed
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+########################################     SPECIFY PROJECT INFORMATION       #########################################
+
 *PROJECT_INFO
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 +NAME
 Assignment 1
++DATE
+030320
++AUTHOR
+GABRIEL EDEFORS
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+################################################   SPECIFY LOADS   #####################################################
+# On the format (Mx, My, Mxy) and (Nx, Ny)
+# Supports M, N, delta_T
+
 *LOADS
-%% On the format (Mx, My, Mxy) and (Nx, Ny)
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-+M 
++M
 50, 50, 0
 +N
 1.0812e+05, 0, 0
 +DELTA_T
 -95
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-*MATERIALS
-%% On the format (Young's modulus, poisson ratio, thermal coefficient)
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#############################################    SPECIFY MATERIALS     #################################################
+# On the format (Young's modulus, poisson ratio, thermal coefficient)
 
+*MATERIALS
 +1
 350E+9, 0.2, -1E-6
 
 +2
 3.5E+9, 0.35, 50E-6
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-*LAMINAE
-%% On the format (thickness, angle, fibre material, matrix material, volume fraction fibres), from top to bottoms
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+###################################    SPECIFY LAMINA PROPERTIES AND LAYUP     #########################################
+# On the format (thickness, angle, fibre material, matrix material, volume fraction fibres), from top to bottoms
 
+*LAMINAE
 +1
 0.0002, 0, 1, 2, 0.65
 +2
