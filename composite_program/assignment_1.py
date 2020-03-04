@@ -45,6 +45,8 @@ plot_stress(axes=axes_local, coordinates=[z_coordinates / 1e3, 'm'], stress=[tot
 # Write results to file ================================================================================================
 filename = 'stress'
 printobj = FilePrint(filename)
-printobj.write_to_file()
+data = Dict = [{'index': 1, 'max_thermal_stress': 34e9, 'min_thermal_stress': 22e9},
+{'index': 1, 'max_thermal_stress': 34e9, 'min_thermal_stress': 22e9}]
+printobj.write_to_file(data)
 
 
