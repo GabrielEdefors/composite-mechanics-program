@@ -1,42 +1,51 @@
 from pathlib import Path
 from csv import writer, DictWriter
+import math
 
 
 class FilePrint:
 
-    def __init__(self, filename):
-        self.file_path = Path.cwd().joinpath('output', filename + '.csv')
-        self.project_info = ['**DATE: 040320', '**TIME: 15:24:44', '**AUTHORS: Gabriel Edefors']
-        self.header = ['OUTPUT FILE CREATED USING COMPOSITE MECHANICS PACKAGE']
-        self.create_header()
+    def __init__(self, info, filename):
+        self.file_path = Path.cwd().joinpath('output', filename + '.txt')
+        self.page_width = 90
+        self.info = info
 
-    def create_header(self):
+        # Read and write package info
+        header = open(Path.cwd().joinpath('input', 'header.txt'), "r")
+        file = open(self.file_path, "w")
+        file.write(header.read())
+        file.close()
 
-        with open(self.file_path, 'w', newline='\n') as csvfile:
-            csv_writer = writer(csvfile)
-            csv_writer.writerow(self.header)
-            csv_writer.writerow(['.'])
-            csv_writer.writerow(['='*42 + '   PROJECT INFO   ' + '='*42])
-            csv_writer.writerow(['.'])
-            for line in self.project_info:
-                csv_writer.writerow([line])
-            csv_writer.writerow(['.'])
-            csv_writer.writerow(['=' * 101])
-            csv_writer.writerow(['.'])
+    def print_project_info(self):
 
-    def write_to_file(self, data):
-        field_names = ['index', 'max_thermal_stress', 'min_thermal_stress']
+        with open(self.file_path, 'a', newline='\n') as file:
 
-        with open(self.file_path, 'a+', newline='\n') as csvfile:
-            csv_writer = writer(csvfile)
-            csv_writer.writerow(['.'])
-            csv_writer.writerow(['='*38 + '   THERMAL STRESS DATA   ' + '='*38])
-            csv_writer.writerow(['.'])
+            self.print_section(list(self.info.keys())[0], file)
 
-        # Write header
-        with open(self.file_path, 'a+', newline='') as csvfile:
+            for key, value in self.info['PROJECT_INFO'].items():
+                file.write('** ' + key + ': ' + value[0] + '\n')
 
-            dict_writer = DictWriter(csvfile, fieldnames=field_names)
+            file.write('.' + '\n')
 
-            dict_writer.writeheader()
-            dict_writer.writerows(data)
+    def print_section(self, section, file):
+        margin = 4
+        line_len1 = math.ceil((self.page_width - len(section)) / 2) - margin
+        line_len2 = self.page_width - line_len1 - len(section) - margin * 2
+        file.write('.' + '\n')
+        file.write('=' * line_len1 + ' ' * margin + section + ' ' * margin + line_len2 * '=' + '\n')
+        file.write('.' + '\n')
+
+    def print_data(self, data, field_names=['index', 'max_thermal_stress', 'min_thermal_stress']):
+
+        with open(self.file_path, 'a+') as file:
+            print(data, file=file)
+            # csv_dictwriter = DictWriter(csvfile, field_names)
+            # csv_writer = writer()
+            #
+            # csv_writer.writerow(['.'])
+            # csv_dictwriter.writeheader()
+            #
+            # for row in data:
+            #     csv_dictwriter.writerow(row)
+
+

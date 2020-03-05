@@ -44,9 +44,9 @@ plot_stress(axes=axes_local, coordinates=[z_coordinates / 1e3, 'm'], stress=[tot
 
 # Write results to file ================================================================================================
 filename = 'stress'
-printobj = FilePrint(filename)
-data = Dict = [{'index': 1, 'max_thermal_stress': 34e9, 'min_thermal_stress': 22e9},
+printobj = FilePrint({'PROJECT_INFO': project_info}, filename)
+data = [{'index': 1, 'max_thermal_stress': 34e9, 'min_thermal_stress': 22e9},
 {'index': 1, 'max_thermal_stress': 34e9, 'min_thermal_stress': 22e9}]
-printobj.write_to_file(data)
+printobj.print_project_info()
 
 
