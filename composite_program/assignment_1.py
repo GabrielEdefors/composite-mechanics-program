@@ -40,13 +40,13 @@ fig_local.suptitle('Local stresses in laminate', fontsize=16)
 plot_stress(axes=axes_local, coordinates=[z_coordinates / 1e3, 'm'], stress=[total_stresses_local / 1e6, 'MPa'],
             stresstype='local')
 
-# plt.show()
+#plt.show()
 
 # Write results to file ================================================================================================
 filename = 'stress'
 printobj = FilePrint({'PROJECT_INFO': project_info}, filename)
-data = [{'index': 1, 'max_thermal_stress': 34e9, 'min_thermal_stress': 22e9},
-{'index': 1, 'max_thermal_stress': 34e9, 'min_thermal_stress': 22e9}]
 printobj.print_project_info()
+printobj.print_output_data(laminate, type='thermal')
+printobj.print_output_data(laminate, type='total')
 
 

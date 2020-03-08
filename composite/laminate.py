@@ -48,7 +48,8 @@ class Laminate:
     def compute_stiffness_matrices(self):
         """Computes A, B and D matrices
 
-              :returns: (A, B, D), of type (ndarray(dtype=float, ndim=2)),
+              :returns: A, B, D matrices
+              :rtype: ndarray(dtype=float, dim=3,3))
 
          """
 
@@ -67,9 +68,8 @@ class Laminate:
     def compute_thermal_stresses(self):
         """Computes thermal stresses and corresponding z coordinates
 
-              :returns: mechanical_stress_global(ndarray(dtype=float, ndim=2),
-                        mechanical_stress_local(ndarray(dtype=float, ndim=2),
-                        z_coordinates(ndarray(dtype=float, ndim=1)
+              :returns: mechanical_stress_global, mechanical_stress_local, z_coordinates
+              :rtype: ndarray(dtype=float, dim=3,nr_laminae*2), ndarray(dtype=float, dim=nr_laminae*2)
 
          """
 
@@ -93,10 +93,14 @@ class Laminate:
 
         for index, lamina in enumerate(self.laminae):
 
-            mechanical_strains = lamina.stress.compute_mechanical_strains(midplane_strains, curvatures, self.delta_T)
-            mechanical_stress_global[:, (2*index):(2*index+2)], mechanical_stress_local[:, (2*index):(2*index+2)] = \
-                lamina.stress.compute_mechanical_stress(mechanical_strains)
+            mechanical_strains = lamina.global_properties.compute_mechanical_strains(midplane_strains, curvatures, self.delta_T, type='thermal')
 
+            # Stress
+            mechanical_stress_global[:, (2*index):(2*index+2)] = \
+                lamina.global_properties.compute_mechanical_stress(mechanical_strains, type='thermal')
+            mechanical_stress_local[:, (2 * index):(2 * index + 2)] = lamina.local_properties.thermal_stress
+
+            # Create two coordinates per interface, one per lamina
             z_coordinates[2*index], z_coordinates[2*index+1] = lamina.coordinates
 
         return mechanical_stress_global, mechanical_stress_local, z_coordinates
@@ -104,9 +108,8 @@ class Laminate:
     def compute_total_stress(self):
         """Computes the total stress caused by both thermal and outer loading
 
-              :returns: mechanical_stress_global(ndarray(dtype=float, ndim=2),
-                        mechanical_stress_local(ndarray(dtype=float, ndim=2),
-                        z_coordinates(ndarray(dtype=float, ndim=1)
+              :returns: mechanical_stress_global, mechanical_stress_local, z_coordinates
+              :rtype: ndarray(dtype=float, dim=3,nr_laminae*2), ndarray(dtype=float, dim=nr_laminae*2)
 
          """
 
@@ -124,10 +127,14 @@ class Laminate:
 
         for index, lamina in enumerate(self.laminae):
 
-            mechanical_strains = lamina.stress.compute_mechanical_strains(midplane_strains, curvatures)
-            mechanical_stress_global[:,(2*index):(2*index+2)], mechanical_stress_local[:,(2*index):(2*index+2)] = \
-                lamina.stress.compute_mechanical_stress(mechanical_strains)
+            mechanical_strains = lamina.global_properties.compute_mechanical_strains(midplane_strains, curvatures, type='total')
 
+            # Compute stress
+            mechanical_stress_global[:, (2*index):(2*index+2)] = \
+                lamina.global_properties.compute_mechanical_stress(mechanical_strains, type='total')
+            mechanical_stress_local[:, (2 * index):(2 * index + 2)] = lamina.local_properties.total_stress
+
+            # Create two coordinates per interface, one per lamina
             z_coordinates[2*index], z_coordinates[2*index+1] = lamina.coordinates
 
         return mechanical_stress_global, mechanical_stress_local, z_coordinates
@@ -136,10 +143,10 @@ class Laminate:
         """Computes strains for a certain outer load specified by loads
 
             :param loads: Load vector containing N and M
-            :type loads: ndarray(dtype=float, ndim=1
+            :type loads: ndarray(dtype=float, dim=6)
 
-              :returns: midplane_strains(ndarray(dtype=float, ndim=1),
-                        curvatures(ndarray(dtype=float, ndim=1),
+            :returns: midplane_strains, curvatures
+            :rtype: ndarray(dtype=float, dim=3)
 
          """
 

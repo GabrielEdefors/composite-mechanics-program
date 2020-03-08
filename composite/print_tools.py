@@ -1,51 +1,160 @@
 from pathlib import Path
-from csv import writer, DictWriter
+import time
 import math
 
 
 class FilePrint:
+    """Manages parameters and methods for writing results to a text file
+
+          :param info: Project info to include in the file
+          :type info: Dict
+          :param filename: Name of the file excluding file type
+          :type filename: string
+
+     """
 
     def __init__(self, info, filename):
         self.file_path = Path.cwd().joinpath('output', filename + '.txt')
-        self.page_width = 90
         self.info = info
+        self.column_width = 18
+        self.page_width = self.column_width * 6
 
         # Read and write package info
         header = open(Path.cwd().joinpath('input', 'header.txt'), "r")
         file = open(self.file_path, "w")
         file.write(header.read())
+
+        # Write current time
+        file.write('\n')
+        localtime = time.asctime(time.localtime(time.time()))
+        file.write('Results computed at: ' + str(localtime) + '\n')
+
         file.close()
 
     def print_project_info(self):
+        """Prints the info specified in the info parameter"""
 
         with open(self.file_path, 'a', newline='\n') as file:
 
-            self.print_section(list(self.info.keys())[0], file)
+            self.print_title(list(self.info.keys())[0], file)
 
             for key, value in self.info['PROJECT_INFO'].items():
                 file.write('** ' + key + ': ' + value[0] + '\n')
 
-            file.write('.' + '\n')
+    def print_title(self, title_name, file):
+        """Prints the title specified in title_name
 
-    def print_section(self, section, file):
+              :param title_name: Title to print
+              :type title_name: str
+              :param file: File to write to
+              :type file: writable file obj
+
+        """
+
         margin = 4
-        line_len1 = math.ceil((self.page_width - len(section)) / 2) - margin
-        line_len2 = self.page_width - line_len1 - len(section) - margin * 2
+        line_len1 = math.ceil((self.page_width - len(title_name)) / 2) - margin
+        line_len2 = self.page_width - line_len1 - len(title_name) - margin * 2
         file.write('.' + '\n')
-        file.write('=' * line_len1 + ' ' * margin + section + ' ' * margin + line_len2 * '=' + '\n')
+        file.write('=' * line_len1 + ' ' * margin + title_name + ' ' * margin + line_len2 * '=' + '\n')
         file.write('.' + '\n')
 
-    def print_data(self, data, field_names=['index', 'max_thermal_stress', 'min_thermal_stress']):
+    def print_output_data(self, laminate, type='total'):
+        """Prints the output data specified by type
 
-        with open(self.file_path, 'a+') as file:
-            print(data, file=file)
-            # csv_dictwriter = DictWriter(csvfile, field_names)
-            # csv_writer = writer()
-            #
-            # csv_writer.writerow(['.'])
-            # csv_dictwriter.writeheader()
-            #
-            # for row in data:
-            #     csv_dictwriter.writerow(row)
+              :param laminate: Laminate to retrieve data from
+              :type laminate: Instance of Laminate
+              :param type: Stress or strain type, either total or thermal
+              :type type: str
+
+        """
+
+        with open(self.file_path, 'a', newline='\n') as file:
+
+            header_global = ['INDEX', 'ANGLE', 'Z-COORDINATE', 'STRESS_X', 'STRESS_Y', 'STRESS_XY']
+            header_local = ['INDEX', 'ANGLE', 'Z-COORDINATE', 'STRESS_L', 'STRESS_T', 'STRESS_LT']
+
+            # Print section
+            if type == 'total':
+                self.print_title('TOTAL STRESS DATA', file)
+            else:
+                self.print_title('THERMAL STRESS DATA', file)
+
+            # print global stress header
+            file.write(self.format_columns(header_global, type='header'))
+
+            # Print global stress
+            for lamina in laminate.laminae:
+                for i in range(2):
+                    if type == 'total':
+                        stress_data = lamina.global_properties.total_stress
+                    else:
+                        stress_data = lamina.global_properties.thermal_stress
+                    self.print_lamina_data(lamina, stress_data, i, file)
+
+            file.write('.\n')
+
+            # print local stress header
+            file.write(self.format_columns(header_local, type='header'))
+
+            # Print local stress
+            for lamina in laminate.laminae:
+                for i in range(2):
+                    if type == 'total':
+                        stress_data = lamina.local_properties.total_stress
+                    else:
+                        stress_data = lamina.local_properties.thermal_stress
+                    self.print_lamina_data(lamina, stress_data, i, file)
+
+    def print_lamina_data(self, lamina, stress, i, file):
+        """Prints lamina index, coordinate, stress components
+
+              :param lamina: Lamina to retrieve data from
+              :type lamina: Instance of Lamina
+              :param stress: Stress to print
+              :type stress: ndarray(dtype=float, dim=3,2)
+              :param i: 0 for bottom of ply and 1 for top
+              :type i: int
+              :param file: File to write to
+              :type file: writable file obj
+
+        """
+        z = lamina.coordinates[i]
+        angle = lamina.angle
+        sigma_1 = stress[0, i]
+        sigma_2 = stress[1, i]
+        sigma_3 = stress[2, i]
+        data = [lamina.index, angle, z, sigma_1, sigma_2, sigma_3]
+
+        file.write(self.format_columns(data, type='stress/strain'))
+
+    def format_columns(self, data, type='stress/strain'):
+        """Formats the column data specified in data
+
+            :returns: data_string
+            :rtype: str
+        """
+
+        if type == 'stress/strain':
+            data_string = f'{data[0]:>{self.column_width}}{data[1]:>{self.column_width}}' \
+                              f'{data[2]:>{self.column_width}.4e}{data[3]:>{self.column_width}.4e}' \
+                              f'{data[4]:>{self.column_width}.4e}{data[5]:>{self.column_width}.4e}' + '\n'
+
+        else:
+            data_string = f'{data[0]:>{self.column_width}}{data[1]:>{self.column_width}}' \
+                              f'{data[2]:>{self.column_width}}{data[3]:>{self.column_width}}' \
+                              f'{data[4]:>{self.column_width}}{data[5]:>{self.column_width}}' + '\n'
+
+        return data_string
+
+
+
+
+
+
+
+
+
+
+
 
 
