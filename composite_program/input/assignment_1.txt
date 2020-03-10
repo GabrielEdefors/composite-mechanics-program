@@ -10,8 +10,6 @@ Assignment 1
 030320
 +AUTHOR
 GABRIEL EDEFORS
-+UNITS
-(kg, m, s, N)
 
 ################################################   SPECIFY LOADS   #####################################################
 # On the format (Mx, My, Mxy) and (Nx, Ny)

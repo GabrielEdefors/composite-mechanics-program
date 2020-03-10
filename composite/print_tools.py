@@ -1,4 +1,6 @@
 from pathlib import Path
+from composite import LoadType
+from enum import Enum
 import time
 import math
 
@@ -58,13 +60,13 @@ class FilePrint:
         file.write('=' * line_len1 + ' ' * margin + title_name + ' ' * margin + line_len2 * '=' + '\n')
         file.write('.' + '\n')
 
-    def print_output_data(self, laminate, type='total'):
+    def print_output_data(self, laminate, load_type: Enum):
         """Prints the output data specified by type
 
               :param laminate: Laminate to retrieve data from
               :type laminate: Instance of Laminate
-              :param type: Stress or strain type, either total or thermal
-              :type type: str
+              :param load_type: Stress or strain type, either total or thermal
+              :type load_type: str
 
         """
 
@@ -74,18 +76,18 @@ class FilePrint:
             header_local = ['INDEX', 'ANGLE', 'Z-COORDINATE', 'STRESS_L', 'STRESS_T', 'STRESS_LT']
 
             # Print section
-            if type == 'total':
+            if load_type == LoadType.total:
                 self.print_title('TOTAL STRESS DATA', file)
             else:
                 self.print_title('THERMAL STRESS DATA', file)
 
             # print global stress header
-            file.write(self.format_columns(header_global, type='header'))
+            file.write(self.format_columns(header_global, data_type='header'))
 
             # Print global stress
             for lamina in laminate.laminae:
                 for i in range(2):
-                    if type == 'total':
+                    if load_type == LoadType.total:
                         stress_data = lamina.global_properties.total_stress
                     else:
                         stress_data = lamina.global_properties.thermal_stress
@@ -94,12 +96,12 @@ class FilePrint:
             file.write('.\n')
 
             # print local stress header
-            file.write(self.format_columns(header_local, type='header'))
+            file.write(self.format_columns(header_local, data_type='header'))
 
             # Print local stress
             for lamina in laminate.laminae:
                 for i in range(2):
-                    if type == 'total':
+                    if load_type == LoadType.total:
                         stress_data = lamina.local_properties.total_stress
                     else:
                         stress_data = lamina.local_properties.thermal_stress
@@ -120,21 +122,25 @@ class FilePrint:
         """
         z = lamina.coordinates[i]
         angle = lamina.angle
-        sigma_1 = stress[0, i]
-        sigma_2 = stress[1, i]
-        sigma_3 = stress[2, i]
+        sigma_1 = stress.components[0, i]
+        sigma_2 = stress.components[1, i]
+        sigma_3 = stress.components[2, i]
         data = [lamina.index, angle, z, sigma_1, sigma_2, sigma_3]
 
-        file.write(self.format_columns(data, type='stress/strain'))
+        file.write(self.format_columns(data, data_type='stress/strain'))
 
-    def format_columns(self, data, type='stress/strain'):
-        """Formats the column data specified in data
+    def format_columns(self, data, data_type='stress/strain'):
+        """Formats the column data specified in data_type
 
-            :returns: data_string
+            :param data: Data to print
+            :type data: List(len=6)
+            :param data_type: Either stress/strain or header, determines the formatting
+            :type data_type: str
+            :returns: Formatted string ready to print
             :rtype: str
         """
 
-        if type == 'stress/strain':
+        if data_type == 'stress/strain':
             data_string = f'{data[0]:>{self.column_width}}{data[1]:>{self.column_width}}' \
                               f'{data[2]:>{self.column_width}.4e}{data[3]:>{self.column_width}.4e}' \
                               f'{data[4]:>{self.column_width}.4e}{data[5]:>{self.column_width}.4e}' + '\n'

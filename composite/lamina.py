@@ -1,5 +1,9 @@
 import numpy as np
-
+from enum import Enum
+from strain import StrainState
+from stress import StressState
+from coordinate_systems import CoordinateSystem
+from laminate import LoadType
 
 class Lamina:
     """Class used to represent a lamina in a laminate
@@ -31,12 +35,12 @@ class Lamina:
 
     def __init__(self, index, thickness, matrix_material, fibre_material, volume_fraction, angle, coordinates):
         self.index = index
+        self.angle = angle
         self.thickness = thickness
+        self.coordinates = coordinates
         self.matrix_material = matrix_material
         self.fibre_material = fibre_material
         self.volume_fraction = volume_fraction
-        self.angle = angle
-        self.coordinates = coordinates
 
         # Homogenised properties
         self.E_L, self.E_T, self.v_LT, self.v_TL, self.G_LT, self.alpha_L, self.alpha_T = self.compute_composite_properties()
@@ -90,7 +94,9 @@ class Lamina:
     def compute_transformation_matrices(self):
         """Computes the coordinate transformation matrices for stress and strain tensors
 
-              :returns: T_1(ndarray(dtype=float, ndim=2)), T_2(ndarray(dtype=float, ndim=2))
+              :returns: T_1, T_2
+              :rtype: ndarray(dtype=float, dim=3,3)
+
          """
 
         m = np.cos(np.deg2rad(self.angle))
@@ -114,38 +120,46 @@ class LocalLaminaProperties:
 
                    :param lamina: Parent lamina
                    :type lamina: Instance of Lamina
-                   :ivar S: Compliance matrix
-                   :ivar Q: Stiffness matrix
+                   :ivar S: Compliance matrix ndarray(dtype=float, dim=3,3)
+                   :ivar Q: Stiffness matrix ndarray(dtype=float, dim=3,3)
     """
 
     def __init__(self, lamina):
         self.lamina = lamina
+        self.coordinate_system = CoordinateSystem.LT
         self.S, self.Q = self.compute_constitutive_matrices()
 
         # Strain state
-        self.thermal_strain = np.zeros((3, 2))
-        self.total_strain = np.zeros((3, 2))
+        self.thermal_strain = StrainState(np.zeros((3, 2)), self.coordinate_system, LoadType.thermal)
+        self.total_strain = StrainState(np.zeros((3, 2)), self.coordinate_system, LoadType.thermal)
 
         # Stress state
-        self.thermal_stress = np.zeros((3, 2))
-        self.total_stress = np.zeros((3, 2))
+        self.thermal_stress = StressState(np.zeros((3, 2)), self.coordinate_system, LoadType.thermal)
+        self.total_stress = StressState(np.zeros((3, 2)), self.coordinate_system, LoadType.thermal)
 
     def compute_thermal_strains(self):
-        self.thermal_strain = self.lamina.T2.dot(self.lamina.global_properties.thermal_strain)
+        local_components = self.lamina.T2.dot(self.lamina.global_properties.thermal_strain.components)
+        self.thermal_strain.components = local_components
 
     def compute_total_strains(self):
-        self.total_strain = self.lamina.T2.dot(self.lamina.global_properties.total_strain)
+        local_components = self.lamina.T2.dot(self.lamina.global_properties.total_strain.components)
+        self.total_strain.components = local_components
 
     def compute_thermal_stress(self):
-        self.thermal_stress = self.lamina.T1.dot(self.lamina.global_properties.thermal_stress)
+        local_components = self.lamina.T1.dot(self.lamina.global_properties.thermal_stress.components)
+        self.thermal_stress.components = local_components
 
     def compute_total_stress(self):
-        self.total_stress = self.lamina.T1.dot(self.lamina.global_properties.total_stress)
+        local_components = self.lamina.T1.dot(self.lamina.global_properties.total_stress.components)
+        self.total_stress.components = local_components
+        print(self.total_stress.components)
+        print(self.lamina.global_properties.total_stress.components)
 
     def compute_constitutive_matrices(self):
         """Computes the compliance and stiffness tensors in local coordinate system
 
-              :returns: Q(ndarray(dtype=float, ndim=2)), S(ndarray(dtype=float, ndim=2)),
+              :returns: Q, S
+              :rtype: ndarray(dtype=float, dim=3,3)
          """
 
         # Compliance matrix
@@ -164,20 +178,23 @@ class GlobalLaminaProperties:
 
                    :param lamina: Parent lamina
                    :type lamina: Instance of Lamina
-                   :ivar S: Compliance matrix
+                   :ivar S: Compliance matrix ndarray(dtype=float, dim=3,3)
+                   :ivar Q Stiffness matrix ndarray(dtype=float, dim=3,3)
+
     """
 
     def __init__(self, lamina):
         self.lamina = lamina
+        self.coordinate_system = CoordinateSystem.xy
         self.S, self.Q = self.compute_constitutive_matrices()
 
         # Strain state
-        self.thermal_strain = np.zeros((3, 2))
-        self.total_strain = np.zeros((3, 2))
+        self.thermal_strain = StrainState(np.zeros((3, 2)), self.coordinate_system, LoadType.thermal)
+        self.total_strain = StrainState(np.zeros((3, 2)), self.coordinate_system, LoadType.thermal)
 
         # Stress state
-        self.thermal_stress = np.zeros((3, 2))
-        self.total_stress = np.zeros((3, 2))
+        self.thermal_stress = StressState(np.zeros((3, 2)), self.coordinate_system, LoadType.thermal)
+        self.total_stress = StressState(np.zeros((3, 2)), self.coordinate_system, LoadType.thermal)
 
         # Thermal coefficients
         alpha_local = np.array([lamina.alpha_L, lamina.alpha_T, 0]).reshape(3, 1)
@@ -191,7 +208,9 @@ class GlobalLaminaProperties:
     def compute_constitutive_matrices(self):
         """Computes the compliance and stiffness tensors in local coordinate system
 
-              :returns: Q(ndarray(dtype=float, ndim=2)), S(ndarray(dtype=float, ndim=2)),
+              :returns: Q, S
+              :rtype: ndarray(dtype=float, dim=3,3)
+
          """
 
         # Compliance matrix
@@ -202,67 +221,64 @@ class GlobalLaminaProperties:
 
         return S, Q
 
-    def compute_mechanical_strains(self, midplane_strains, curvatures, *delta_T, type):
+    def compute_mechanical_strains(self, midplane_strains, curvatures, *delta_T):
         """Computes the mechanical strains caused by change in temperature delta_T
 
               :param midplane_strains: Contains strain components in order x, y, xy
-              :type midplane_strains: ndarray(dtype=float, ndim=1)
+              :type midplane_strains: ndarray(dtype=float, dim=3,1)
               :param curvatures: Contains curvature components in order x, y, xy
-              :type curvatures: ndarray(dtype=float, ndim=1)
-              :param type: specify strain type, either thermal or total
-              :param type: string
+              :type curvatures: ndarray(dtype=float, dim=3,1)
               :param delta_T: Temperature difference
               :type delta_T: float
               :returns: mechanical_strains
-              :rtype: ndarray(dtype=float, ndim=2)
+              :rtype: ndarray(dtype=float, dim=3,2)
 
          """
+
         mechanical_strains = np.zeros((3, 2))
 
-        mechanical_strains[:, 0, np.newaxis] = midplane_strains + self.lamina.coordinates[0] * curvatures
-        mechanical_strains[:, 1, np.newaxis] = midplane_strains + self.lamina.coordinates[1] * curvatures
+        mechanical_strains[:, 0, np.newaxis] = midplane_strains.components + self.lamina.coordinates[0] * curvatures.components
+        mechanical_strains[:, 1, np.newaxis] = midplane_strains.components + self.lamina.coordinates[1] * curvatures.components
 
         if delta_T:
             mechanical_strains[:, 0, np.newaxis] -= self.lamina.global_properties.alpha * delta_T
             mechanical_strains[:, 1, np.newaxis] -= self.lamina.global_properties.alpha * delta_T
 
-        if type == 'thermal':
-            self.thermal_strain = mechanical_strains
+        if midplane_strains.strain_type == LoadType.thermal:
+            self.thermal_strain = StrainState(mechanical_strains, self.coordinate_system, midplane_strains.strain_type)
             self.lamina.local_properties.compute_thermal_strains()
-        else:
-            self.total_strain = mechanical_strains
+
+        elif midplane_strains.strain_type == LoadType.total:
+            self.total_strain = StrainState(mechanical_strains, self.coordinate_system, midplane_strains.strain_type)
             self.lamina.local_properties.compute_total_strains()
 
-        return mechanical_strains
-
-    def compute_mechanical_stress(self, strains, type):
+    def compute_mechanical_stress(self, strains):
         """Computes the mechanical stress caused by change in temperature delta_T
 
               :param strains: Strain array containing components in order x, y, xy
-              :type strains: ndarray(dtype=float, ndim=1)
-              :param type: specify stress type, either thermal or total
-              :param type: string
+              :type strains: ndarray(dtype=float, dim=3,2)
 
               :returns: mechanical_stress
-              :rtype: ndarray(dtype=float, ndim=2)
+              :rtype: ndarray(dtype=float, dim=3,2)
 
          """
         mechanical_stress = np.zeros((3, 2))
 
-        mechanical_stress[:, 0, np.newaxis] = self.lamina.global_properties.Q.dot(strains[:, 0, np.newaxis])
-        mechanical_stress[:, 1, np.newaxis] = self.lamina.global_properties.Q.dot(strains[:, 1, np.newaxis])
+        mechanical_stress[:, 0, np.newaxis] = self.lamina.global_properties.Q.dot(strains.components[:, 0, np.newaxis])
+        mechanical_stress[:, 1, np.newaxis] = self.lamina.global_properties.Q.dot(strains.components[:, 1, np.newaxis])
 
         # Calculate stresses corresponding to strains
-        if type == 'thermal':
+        if strains.strain_type == LoadType.thermal:
 
-            self.thermal_stress[:, 0, np.newaxis] = mechanical_stress[:, 0, np.newaxis]
-            self.thermal_stress[:, 1, np.newaxis] = mechanical_stress[:, 1, np.newaxis]
+            self.thermal_stress.components[:, 0, np.newaxis] = mechanical_stress[:, 0, np.newaxis]
+            self.thermal_stress.components[:, 1, np.newaxis] = mechanical_stress[:, 1, np.newaxis]
             self.lamina.local_properties.compute_thermal_stress()
 
-        else:
-
-            self.total_stress[:, 0, np.newaxis] = mechanical_stress[:, 0, np.newaxis]
-            self.total_stress[:, 1, np.newaxis] = mechanical_stress[:, 1, np.newaxis]
+        elif strains.strain_type == LoadType.total:
+            self.total_stress.components[:, 0, np.newaxis] = mechanical_stress[:, 0, np.newaxis]
+            self.total_stress.components[:, 1, np.newaxis] = mechanical_stress[:, 1, np.newaxis]
             self.lamina.local_properties.compute_total_stress()
 
-        return mechanical_stress
+
+
+

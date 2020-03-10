@@ -1,16 +1,14 @@
+from coordinate_systems import CoordinateSystem
 
-
-def plot_stress(axes, coordinates, stress, stresstype):
+def plot_stress(axes, coordinates, stress):
     """Plot graphs of the stress components supplied by stress as a function of z coordinates
 
           :param axes: Axes to hold the graphs
           :type axes: list of axis objects
-          :param coordinates: Element 0 an array with the z coordinates, element 1 is the unit of the values
-          :type coordinates: tuple(ndarray(dtype=float, ndim=1), str)
-          :param stress: Element 0 an array with the stresses, element 1 is the unit of the values
-          :type stress: tuple(ndarray(dtype=float, ndim=2), str)
-          :param stresstype: Either 'local' or 'global' stress
-          :type stresstype: str
+          :param coordinates: Array with the z coordinates
+          :type coordinates: ndarray(dtype=float, dim=n,1)
+          :param stress: Stress or strain state to be plotted
+          :type stress: Instance of StressState or StrainState
 
      """
     colors = ['blue', 'green', 'red']
@@ -19,14 +17,14 @@ def plot_stress(axes, coordinates, stress, stresstype):
 
     for index, axis in enumerate(axes):
 
-        axis.plot(stress[0][index, :], coordinates[0], colors[index])
+        axis.plot(stress.components[index, :], coordinates, colors[index])
         axis.grid(True)
 
-        axis.set_ylabel('z' + " [" + coordinates[1] + "]")
-        if stresstype == 'local':
-            axis.set_xlabel(x_labels_local[index] + " [" + stress[1] + "]")
-        elif stresstype == 'global':
-            axis.set_xlabel(x_labels_global[index] + " [" + stress[1] + "]")
+        axis.set_ylabel('z' + "[m]")
+        if stress.coordinate_system == CoordinateSystem.LT:
+            axis.set_xlabel(x_labels_local[index] + " [Pa]")
+        elif stress.coordinate_system == CoordinateSystem.xy:
+            axis.set_xlabel(x_labels_global[index] + " [Pa]")
         else:
             print("Stress type not supported")
 
