@@ -14,7 +14,7 @@ def replace_characters(string):
     return string_stripped
 
 
-def read_input_file(filename):
+def read_input_file(filename='', filepath=''):
     """ Reads the input file and creates an instance of composite.Laminate which in turn holds composite.Laminae instances
 
                  :param filename: Input file
@@ -23,7 +23,9 @@ def read_input_file(filename):
                  :rtype: Instance of composite.Laminate
 
        """
-    filepath = Path.cwd().joinpath('input', filename)
+
+    if filepath == '':
+        filepath = Path.cwd().joinpath('input', filename)
 
     # Initiate empty dictionary that can store the data
     input_data = {}

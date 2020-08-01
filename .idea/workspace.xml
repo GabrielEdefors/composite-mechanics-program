@@ -2,17 +2,21 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="247bc7d5-3dce-48db-a2a4-d60928bdd932" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/composite/coordinate_systems.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/composite/strain.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/composite/stress.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/composite_program/180607.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/composite_program/20130830.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/composite_program/input/180607_1.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/composite_program/input/20130830.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/composite_program/main.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/composite_program/model.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/composite_program/view.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/composite mechanics.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/composite mechanics.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/composite/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/composite/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/composite/lamina.py" beforeDir="false" afterPath="$PROJECT_DIR$/composite/lamina.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/composite/laminate.py" beforeDir="false" afterPath="$PROJECT_DIR$/composite/laminate.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/composite/parser.py" beforeDir="false" afterPath="$PROJECT_DIR$/composite/parser.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/composite/plot_tools.py" beforeDir="false" afterPath="$PROJECT_DIR$/composite/plot_tools.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/composite/print_tools.py" beforeDir="false" afterPath="$PROJECT_DIR$/composite/print_tools.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/composite_program/assignment_1.py" beforeDir="false" afterPath="$PROJECT_DIR$/composite_program/assignment_1.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/composite_program/input/assignment_1.txt" beforeDir="false" afterPath="$PROJECT_DIR$/composite_program/input/assignment_1.txt" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -21,38 +25,24 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+    <leaf>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/composite/__init__.py">
+        <entry file="file://$PROJECT_DIR$/composite_program/exam.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="253">
-              <caret line="11" column="41" selection-start-line="11" selection-start-column="41" selection-end-line="11" selection-end-column="41" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/composite/lamina.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="371">
-              <caret line="153" column="55" lean-forward="true" selection-start-line="153" selection-start-column="55" selection-end-line="153" selection-end-column="55" />
+            <state relative-caret-position="874">
+              <caret line="38" column="18" selection-start-line="38" selection-start-column="18" selection-end-line="38" selection-end-column="18" />
               <folding>
-                <element signature="e#0#18#0" expanded="true" />
-                <element signature="e#39#1206#1" />
-                <element signature="e#2165#3658#0" />
-                <element signature="e#3715#4337#0" />
-                <element signature="e#5629#6143#0" />
-                <element signature="e#7438#7913#0" />
+                <element signature="e#0#81#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/composite/stress.py">
+        <entry file="file://$PROJECT_DIR$/composite_program/20130830.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="299">
-              <caret line="13" lean-forward="true" selection-start-line="13" selection-end-line="13" />
+            <state relative-caret-position="-115">
+              <caret line="12" column="22" lean-forward="true" selection-start-line="12" selection-start-column="22" selection-end-line="12" selection-end-column="22" />
             </state>
           </provider>
         </entry>
@@ -60,57 +50,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/composite_program/assignment_1.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="391">
-              <caret line="38" lean-forward="true" selection-start-line="38" selection-end-line="38" />
-              <folding>
-                <element signature="e#0#61#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/composite/print_tools.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="327">
-              <caret line="126" column="35" selection-start-line="126" selection-start-column="35" selection-end-line="126" selection-end-column="35" />
-              <folding>
-                <element signature="e#0#24#0" expanded="true" />
-                <element signature="e#72#334#1" />
-                <element signature="e#384#945#0" />
-                <element signature="e#989#1299#0" />
-                <element signature="e#1354#1928#0" />
-                <element signature="e#1988#3808#0" />
-                <element signature="e#2950#3261#0" />
-                <element signature="e#4701#5712#0" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/composite_program/output/stress.txt">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1794">
-              <caret line="16" column="108" lean-forward="true" selection-start-line="16" selection-start-column="108" selection-end-line="16" selection-end-column="108" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/composite_program/input/assignment_1.txt">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="184">
-              <caret line="8" column="5" lean-forward="true" selection-start-line="8" selection-start-column="5" selection-end-line="8" selection-end-column="5" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/composite/plot_tools.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="207">
-              <caret line="17" selection-start-line="17" selection-end-line="17" />
+            <state relative-caret-position="97">
+              <caret line="26" lean-forward="true" selection-start-line="26" selection-end-line="26" />
             </state>
           </provider>
         </entry>
@@ -118,30 +59,70 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/composite/laminate.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-79">
-              <caret line="122" column="70" selection-start-line="122" selection-start-column="70" selection-end-line="122" selection-end-column="70" />
+            <state relative-caret-position="1981">
+              <caret line="167" column="43" selection-start-line="167" selection-start-column="43" selection-end-line="167" selection-end-column="43" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
-                <element signature="e#41#511#1" />
-                <element signature="e#924#952#0" />
-                <element signature="e#996#1579#0" />
-                <element signature="e#1631#2074#0" />
-                <element signature="e#2122#2996#0" />
-                <element signature="e#3082#4184#0" />
-                <element signature="e#4291#4567#1" />
-                <element signature="e#6064#7283#0" />
-                <element signature="e#5957#6567#0" />
-                <element signature="e#5957#6249#1" />
+                <element signature="e#173#643#1" />
+                <element signature="e#1237#1820#0" />
+                <element signature="e#2363#3031#0" />
+                <element signature="e#3080#3711#0" />
+                <element signature="e#3757#4875#0" />
+                <element signature="e#7765#8567#0" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/composite_program/view.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="159">
+              <caret line="115" column="70" lean-forward="true" selection-start-line="115" selection-start-column="70" selection-end-line="115" selection-end-column="70" />
+              <folding>
+                <element signature="e#0#26#0" expanded="true" />
+                <element signature="e#1160#1709#0" />
+                <element signature="e#2145#2796#0" />
+                <element signature="e#3443#5528#0" />
+                <element signature="e#5652#6172#0" />
+                <element signature="e#3225#3466#0" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/composite/strain.py">
+        <entry file="file://$PROJECT_DIR$/composite/plot_tools.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="184">
-              <caret line="8" column="38" lean-forward="true" selection-start-line="8" selection-start-column="38" selection-end-line="8" selection-end-column="38" />
+            <state relative-caret-position="414">
+              <caret line="18" column="27" selection-start-line="18" selection-start-column="27" selection-end-line="18" selection-end-column="40" />
+              <folding>
+                <element signature="e#0#47#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/composite_program/main.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="299">
+              <caret line="13" lean-forward="true" selection-start-line="13" selection-end-line="13" />
+              <folding>
+                <element signature="e#0#29#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/composite_program/model.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="267">
+              <caret line="30" column="30" lean-forward="true" selection-start-line="30" selection-start-column="30" selection-end-line="30" selection-end-column="30" />
+              <folding>
+                <element signature="e#0#81#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -164,7 +145,9 @@
       <find>coord</find>
       <find>%</find>
       <find>dim</find>
+      <find>selec</find>
       <find>total</find>
+      <find>line</find>
     </findStrings>
     <replaceStrings>
       <replace>+</replace>
@@ -192,7 +175,6 @@
         <option value="$PROJECT_DIR$/composite/laminalocal.py" />
         <option value="$PROJECT_DIR$/composite/doc/build/_sources/index.rst.txt" />
         <option value="$PROJECT_DIR$/composite_program/plot tools.py" />
-        <option value="$PROJECT_DIR$/composite/parser.py" />
         <option value="$PROJECT_DIR$/composite/print tools.py" />
         <option value="$PROJECT_DIR$/composite/header.txt" />
         <option value="$PROJECT_DIR$/composite/doc/source/index.rst" />
@@ -201,27 +183,35 @@
         <option value="$PROJECT_DIR$/composite_program/input/assignment_1.txt" />
         <option value="$PROJECT_DIR$/composite/strain.py" />
         <option value="$PROJECT_DIR$/composite/stress.py" />
-        <option value="$PROJECT_DIR$/composite/plot_tools.py" />
         <option value="$PROJECT_DIR$/composite/__init__.py" />
         <option value="$PROJECT_DIR$/composite/lamina.py" />
-        <option value="$PROJECT_DIR$/composite/laminate.py" />
-        <option value="$PROJECT_DIR$/composite_program/assignment_1.py" />
+        <option value="$PROJECT_DIR$/composite_program/input/180607_1.txt" />
         <option value="$PROJECT_DIR$/composite/print_tools.py" />
+        <option value="$PROJECT_DIR$/composite/plot_tools.py" />
+        <option value="$PROJECT_DIR$/composite_program/180607.py" />
+        <option value="$PROJECT_DIR$/composite/laminate.py" />
+        <option value="$PROJECT_DIR$/composite_program/20130830.py" />
+        <option value="$PROJECT_DIR$/composite_program/input/20130830.txt" />
+        <option value="$PROJECT_DIR$/composite_program/input/exam.txt" />
+        <option value="$PROJECT_DIR$/composite_program/exam.py" />
+        <option value="$PROJECT_DIR$/composite_program/main.py" />
+        <option value="$PROJECT_DIR$/composite/parser.py" />
+        <option value="$PROJECT_DIR$/composite_program/assignment_1.py" />
+        <option value="$PROJECT_DIR$/composite_program/model.py" />
+        <option value="$PROJECT_DIR$/composite_program/view.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="-8" />
-    <option name="y" value="-8" />
-    <option name="width" value="976" />
-    <option name="height" value="1056" />
+    <option name="x" value="-7" />
+    <option name="width" value="974" />
+    <option name="height" value="1047" />
   </component>
   <component name="ProjectView">
     <navigator proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -245,28 +235,27 @@
               <item name="composite_program" type="462c0819:PsiDirectoryNode" />
               <item name="input" type="462c0819:PsiDirectoryNode" />
             </path>
-            <path>
-              <item name="composite mechanics" type="b2602c69:ProjectViewProjectNode" />
-              <item name="composite mechanics" type="462c0819:PsiDirectoryNode" />
-              <item name="composite_program" type="462c0819:PsiDirectoryNode" />
-              <item name="output" type="462c0819:PsiDirectoryNode" />
-            </path>
           </expand>
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/composite/doc/build" />
-    <property name="settings.editor.selected.configurable" value="reference.settingsdialog.IDE.editor.colors.General" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../split_expenses" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\Gabriel\PycharmProjects\composite mechanics\composite_program\input" />
       <recent name="C:\Users\Gabriel\PycharmProjects\composite mechanics\composite" />
       <recent name="C:\Users\Gabriel\PycharmProjects\composite\composite_program" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\Gabriel\PycharmProjects\composite mechanics\composite_program\input" />
+      <recent name="C:\Users\Gabriel\PycharmProjects\composite mechanics\composite_program" />
     </key>
   </component>
   <component name="RunDashboard">
@@ -281,29 +270,8 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.assignment_1">
-    <configuration name="__init__" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <module name="composite mechanics" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/__init__.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="analysis" type="PythonConfigurationType" factoryName="Python" temporary="true">
+  <component name="RunManager" selected="Python.main">
+    <configuration name="180607" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="composite mechanics" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -315,7 +283,28 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/composite_program/analysis.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/composite_program/180607.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="20130830" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="composite mechanics" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/composite_program" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/composite_program/20130830.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -345,6 +334,48 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="exam" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="composite mechanics" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/composite_program" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/composite_program/exam.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="composite mechanics" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/composite_program" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/composite_program/main.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="Sphinx" type="docs" factoryName="Sphinx task">
       <module name="composite mechanics" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -362,16 +393,20 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="Python.__init__" />
-      <item itemvalue="Python.analysis" />
+      <item itemvalue="Python.180607" />
+      <item itemvalue="Python.20130830" />
       <item itemvalue="Python.assignment_1" />
+      <item itemvalue="Python.exam" />
       <item itemvalue="Python docs.Sphinx" />
+      <item itemvalue="Python.main" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.main" />
         <item itemvalue="Python.assignment_1" />
-        <item itemvalue="Python.__init__" />
-        <item itemvalue="Python.analysis" />
+        <item itemvalue="Python.20130830" />
+        <item itemvalue="Python.exam" />
+        <item itemvalue="Python.180607" />
       </list>
     </recent_temporary>
   </component>
@@ -435,20 +470,27 @@
       <option name="project" value="LOCAL" />
       <updated>1583701295655</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="100320-1-1">
+      <created>1583852956604</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1583852956604</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.12328767" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.18177028" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32936078" />
-      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.097508125" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.39328277" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.3066089" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.33586133" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
@@ -470,7 +512,8 @@
     <MESSAGE value="030320-1-1" />
     <MESSAGE value="050320-1-1" />
     <MESSAGE value="080320-1-1" />
-    <option name="LAST_COMMIT_MESSAGE" value="080320-1-1" />
+    <MESSAGE value="100320-1-1" />
+    <option name="LAST_COMMIT_MESSAGE" value="100320-1-1" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -486,36 +529,47 @@
   <component name="debuggerHistoryManager">
     <expressions id="evaluateCodeFragment">
       <expression>
+        <expression-string>midplane_strains</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>curvatures</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>self.lamina.global_properties.alpha * delta_T</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>self.lamina.global_properties.alpha</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>laminate.laminae</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>laminate.laminae[2].local_properties</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>laminate.laminae[2]</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
+      </expression>
+      <expression>
         <expression-string>data_top</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
       </expression>
       <expression>
         <expression-string>f'{data_top[0]:6.2}{data_top[1]:6.2}{data_top[2]:6.2e}{data_top[3]:6.2e}{data_top[4]:6.2e}'</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>midplane_strains[:3] + self.lamina.coordinates[0] * midplane_strains[3:] - \
-                                              self.lamina.global_properties.alpha * delta_T</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>midplane_strains[:3] + self.lamina.coordinates[1] * midplane_strains[3:] - \
-                                self.lamina.global_properties.alpha * delta_T</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>midplane_strains[:3] + self.lamina.coordinates[0] * midplane_strains[3:] - \
-                                self.lamina.global_properties.alpha * delta_T</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>for lamina in laminae:
-       lamina.coordinates -= [z2, z2]</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
       </expression>
@@ -529,47 +583,47 @@
     </expressions>
     <expressions id="evaluateExpression">
       <expression>
-        <expression-string>lamina.global_properties.total_stress.components</expression-string>
+        <expression-string>project_info</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>mechanical_stress_global.components</expression-string>
+        <expression-string>filepath.split('/')[-1].replace('.txt', '')</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>mechanical_stress_local.components</expression-string>
+        <expression-string>laminate.laminae[0]</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>load_type</expression-string>
+        <expression-string>laminate.A[1,1]</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>lamina.local_properties.total_stress.components</expression-string>
+        <expression-string>laminate.A</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>(2 * index)</expression-string>
+        <expression-string>laminate.laminae[2].local_properties</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>lamina.local_properties.thermal_stress.components</expression-string>
+        <expression-string>laminate.thermal_load_vector</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>create_laminate_arrays</expression-string>
+        <expression-string>laminate.laminae[2]</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>lamina</expression-string>
+        <expression-string>self.laminae[0]</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
@@ -632,20 +686,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/composite/parser.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1909">
-          <caret line="115" lean-forward="true" selection-start-line="115" selection-end-line="115" />
-          <folding>
-            <element signature="e#0#16#0" expanded="true" />
-            <element signature="e#80#377#0" />
-            <element signature="e#80#303#1" />
-            <element signature="e#415#758#1" />
-            <element signature="e#959#1634#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/composite_program/input/header.txt">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="69">
@@ -663,13 +703,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/composite/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="253">
-          <caret line="11" column="41" selection-start-line="11" selection-start-column="41" selection-end-line="11" selection-end-column="41" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$USER_HOME$/AppData/Local/Continuum/anaconda3/Lib/site-packages/matplotlib/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="315">
@@ -677,100 +710,198 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/composite/strain.py">
+    <entry file="file://$PROJECT_DIR$/composite/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="184">
-          <caret line="8" column="38" lean-forward="true" selection-start-line="8" selection-start-column="38" selection-end-line="8" selection-end-column="38" />
+        <state relative-caret-position="253">
+          <caret line="11" column="41" selection-start-line="11" selection-start-column="41" selection-end-line="11" selection-end-column="41" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/composite/lamina.py">
+    <entry file="file://$PROJECT_DIR$/composite_program/output/stress.txt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="371">
-          <caret line="153" column="55" lean-forward="true" selection-start-line="153" selection-start-column="55" selection-end-line="153" selection-end-column="55" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-            <element signature="e#39#1206#1" />
-            <element signature="e#2165#3658#0" />
-            <element signature="e#3715#4337#0" />
-            <element signature="e#5629#6143#0" />
-            <element signature="e#7438#7913#0" />
-          </folding>
+        <state relative-caret-position="368">
+          <caret line="16" column="108" lean-forward="true" selection-start-line="16" selection-start-column="108" selection-end-line="16" selection-end-column="108" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/composite/laminate.py">
+    <entry file="file://$PROJECT_DIR$/composite_program/output/180607 result_file.txt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-79">
-          <caret line="122" column="70" selection-start-line="122" selection-start-column="70" selection-end-line="122" selection-end-column="70" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-            <element signature="e#41#511#1" />
-            <element signature="e#924#952#0" />
-            <element signature="e#996#1579#0" />
-            <element signature="e#1631#2074#0" />
-            <element signature="e#2122#2996#0" />
-            <element signature="e#3082#4184#0" />
-            <element signature="e#4291#4567#1" />
-            <element signature="e#6064#7283#0" />
-            <element signature="e#5957#6567#0" />
-            <element signature="e#5957#6249#1" />
-          </folding>
+        <state relative-caret-position="-621">
+          <caret line="9" column="1" lean-forward="true" selection-start-line="9" selection-start-column="1" selection-end-line="9" selection-end-column="1" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/composite/stress.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="299">
-          <caret line="13" lean-forward="true" selection-start-line="13" selection-end-line="13" />
+          <caret line="13" selection-start-line="13" selection-end-line="13" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/composite/plot_tools.py">
+    <entry file="file://$PROJECT_DIR$/composite_program/input/180607_1.txt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="207">
-          <caret line="17" selection-start-line="17" selection-end-line="17" />
+        <state relative-caret-position="943">
+          <caret line="41" column="2" selection-end-line="50" selection-end-column="21" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/composite_program/input/exam.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1058">
+          <caret line="46" column="5" selection-start-line="46" selection-start-column="5" selection-end-line="46" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/composite_program/input/20130830.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="642">
+          <caret line="40" column="19" selection-start-line="40" selection-start-column="19" selection-end-line="40" selection-end-column="19" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/composite/print_tools.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="327">
-          <caret line="126" column="35" selection-start-line="126" selection-start-column="35" selection-end-line="126" selection-end-column="35" />
+        <state relative-caret-position="384">
+          <caret line="62" column="59" selection-start-line="62" selection-start-column="59" selection-end-line="62" selection-end-column="59" />
           <folding>
             <element signature="e#0#24#0" expanded="true" />
-            <element signature="e#72#334#1" />
-            <element signature="e#384#945#0" />
-            <element signature="e#989#1299#0" />
-            <element signature="e#1354#1928#0" />
-            <element signature="e#1988#3808#0" />
-            <element signature="e#2950#3261#0" />
-            <element signature="e#4701#5712#0" />
+            <element signature="e#437#998#0" />
+            <element signature="e#1042#1352#0" />
+            <element signature="e#1407#1981#0" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/composite_program/output/stress.txt">
+    <entry file="file://$PROJECT_DIR$/composite/strain.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1794">
-          <caret line="16" column="108" lean-forward="true" selection-start-line="16" selection-start-column="108" selection-end-line="16" selection-end-column="108" />
+        <state relative-caret-position="184">
+          <caret line="8" column="38" selection-start-line="8" selection-start-column="38" selection-end-line="8" selection-end-column="38" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/composite_program/assignment_1.py">
+    <entry file="file://$PROJECT_DIR$/composite/parser.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="391">
-          <caret line="38" lean-forward="true" selection-start-line="38" selection-end-line="38" />
+        <state relative-caret-position="253">
+          <caret line="27" column="57" selection-start-line="27" selection-start-column="57" selection-end-line="27" selection-end-column="57" />
           <folding>
-            <element signature="e#0#61#0" expanded="true" />
+            <element signature="e#0#16#0" expanded="true" />
+            <element signature="e#80#377#0" />
+            <element signature="e#80#303#1" />
+            <element signature="e#415#758#1" />
+            <element signature="e#959#1634#0" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/composite_program/180607.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="322">
+          <caret line="15" column="43" lean-forward="true" selection-start-line="15" selection-start-column="43" selection-end-line="15" selection-end-column="43" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/composite/lamina.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="141">
+          <caret line="52" column="61" selection-start-line="52" selection-start-column="61" selection-end-line="52" selection-end-column="61" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+            <element signature="e#2326#3819#0" />
+            <element signature="e#3876#4498#0" />
+            <element signature="e#4534#6954#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/composite_program/20130830.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-115">
+          <caret line="12" column="22" lean-forward="true" selection-start-line="12" selection-start-column="22" selection-end-line="12" selection-end-column="22" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/composite_program/input/assignment_1.txt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="184">
-          <caret line="8" column="5" lean-forward="true" selection-start-line="8" selection-start-column="5" selection-end-line="8" selection-end-column="5" />
+        <state relative-caret-position="-184">
+          <caret line="4" lean-forward="true" selection-start-line="4" selection-end-line="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/composite/laminate.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1981">
+          <caret line="167" column="43" selection-start-line="167" selection-start-column="43" selection-end-line="167" selection-end-column="43" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+            <element signature="e#173#643#1" />
+            <element signature="e#1237#1820#0" />
+            <element signature="e#2363#3031#0" />
+            <element signature="e#3080#3711#0" />
+            <element signature="e#3757#4875#0" />
+            <element signature="e#7765#8567#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/composite_program/model.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="267">
+          <caret line="30" column="30" lean-forward="true" selection-start-line="30" selection-start-column="30" selection-end-line="30" selection-end-column="30" />
+          <folding>
+            <element signature="e#0#81#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/composite_program/exam.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="874">
+          <caret line="38" column="18" selection-start-line="38" selection-start-column="18" selection-end-line="38" selection-end-column="18" />
+          <folding>
+            <element signature="e#0#81#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/composite_program/assignment_1.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="97">
+          <caret line="26" lean-forward="true" selection-start-line="26" selection-end-line="26" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/composite_program/main.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="299">
+          <caret line="13" lean-forward="true" selection-start-line="13" selection-end-line="13" />
+          <folding>
+            <element signature="e#0#29#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/composite/plot_tools.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="414">
+          <caret line="18" column="27" selection-start-line="18" selection-start-column="27" selection-end-line="18" selection-end-column="40" />
+          <folding>
+            <element signature="e#0#47#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/composite_program/view.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="159">
+          <caret line="115" column="70" lean-forward="true" selection-start-line="115" selection-start-column="70" selection-end-line="115" selection-end-column="70" />
+          <folding>
+            <element signature="e#0#26#0" expanded="true" />
+            <element signature="e#1160#1709#0" />
+            <element signature="e#2145#2796#0" />
+            <element signature="e#3443#5528#0" />
+            <element signature="e#5652#6172#0" />
+            <element signature="e#3225#3466#0" />
+          </folding>
         </state>
       </provider>
     </entry>

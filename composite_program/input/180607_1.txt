@@ -1,0 +1,51 @@
+# Input file for composite program
+# NOTE: Lines containing # or whitespaces will not be parsed
+
+########################################     SPECIFY PROJECT INFORMATION       #########################################
+
+*PROJECT_INFO
++NAME
+180607 EXAM
++DATE
+110320
++AUTHOR
+GABRIEL EDEFORS
+
+################################################   SPECIFY LOADS   #####################################################
+# On the format (Mx, My, Mxy) and (Nx, Ny)
+# Supports M, N, delta_T
+
+*LOADS
++M
+0, 0, 0
++N
+0, 0, 0
++DELTA_T
+-150
+
+#############################################    SPECIFY MATERIALS     #################################################
+# On the format (Young's modulus, poisson ratio, thermal coefficient)
+
+*MATERIALS
++1
+72E+9, 0.25, 5E-6
+
++2
+3E+9, 0.32, 66E-6
+
+###################################    SPECIFY LAMINA PROPERTIES AND LAYUP     #########################################
+# On the format (thickness, angle, fibre material, matrix material, volume fraction fibres), from top to bottoms
+
+*LAMINAE
++1
+0.00025, 0, 1, 2, 0.5
++2
+0.00025, 0, 1, 2, 0.5
++3
+0.00025, 90, 1, 2, 0.5
++4
+0.00025, 90, 1, 2, 0.5
++5
+0.00025, 0, 1, 2, 0.5
++6
+0.00025, 0, 1, 2, 0.5

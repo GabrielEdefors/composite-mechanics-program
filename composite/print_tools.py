@@ -72,40 +72,52 @@ class FilePrint:
 
         with open(self.file_path, 'a', newline='\n') as file:
 
-            header_global = ['INDEX', 'ANGLE', 'Z-COORDINATE', 'STRESS_X', 'STRESS_Y', 'STRESS_XY']
-            header_local = ['INDEX', 'ANGLE', 'Z-COORDINATE', 'STRESS_L', 'STRESS_T', 'STRESS_LT']
+            header_global = [['INDEX', 'ANGLE', 'Z-COORDINATE', 'STRESS_X', 'STRESS_Y', 'STRESS_XY'],
+                            ['INDEX', 'ANGLE', 'Z-COORDINATE', 'STRAIN_X', 'STRAIN_Y', 'STRAIN_XY']]
+            header_local = [['INDEX', 'ANGLE', 'Z-COORDINATE', 'STRESS_L', 'STRESS_T', 'STRESS_LT'],
+                            ['INDEX', 'ANGLE', 'Z-COORDINATE', 'STRAIN_L', 'STRAIN_T', 'STRAIN_LT']]
+            total_header = ['TOTAL STRESS DATA', 'TOTAL STRAIN DATA']
+            thermal_header = ['THERMAL STRESS DATA', 'THERMAL STRAIN DATA']
 
-            # Print section
-            if load_type == LoadType.total:
-                self.print_title('TOTAL STRESS DATA', file)
-            else:
-                self.print_title('THERMAL STRESS DATA', file)
+            for i in range(2):
+                # Print section
+                if load_type == LoadType.total:
+                    self.print_title(total_header[i], file)
+                else:
+                    self.print_title(thermal_header[i], file)
 
-            # print global stress header
-            file.write(self.format_columns(header_global, data_type='header'))
+                # print global stress header
+                file.write(self.format_columns(header_global[i], data_type='header'))
 
-            # Print global stress
-            for lamina in laminate.laminae:
-                for i in range(2):
-                    if load_type == LoadType.total:
-                        stress_data = lamina.global_properties.total_stress
-                    else:
-                        stress_data = lamina.global_properties.thermal_stress
-                    self.print_lamina_data(lamina, stress_data, i, file)
+                # Print global stress
+                for lamina in laminate.laminae:
+                    for i in range(2):
+                        if load_type == LoadType.total:
+                            stress_data = lamina.global_properties.total_stress
+                        else:
+                            stress_data = lamina.global_properties.thermal_stress
+                        self.print_lamina_data(lamina, stress_data, i, file)
 
-            file.write('.\n')
+                file.write('.\n')
 
-            # print local stress header
-            file.write(self.format_columns(header_local, data_type='header'))
+                # print local stress header
+                file.write(self.format_columns(header_local[i], data_type='header'))
 
-            # Print local stress
-            for lamina in laminate.laminae:
-                for i in range(2):
-                    if load_type == LoadType.total:
-                        stress_data = lamina.local_properties.total_stress
-                    else:
-                        stress_data = lamina.local_properties.thermal_stress
-                    self.print_lamina_data(lamina, stress_data, i, file)
+                # Print local stress
+                for lamina in laminate.laminae:
+                    for j in range(2):
+                        if load_type == LoadType.total:
+                            if i == 0:
+                                stress_data = lamina.local_properties.total_stress
+                            else:
+                                stress_data = lamina.local_properties.total_strain
+                        else:
+                            if i == 0:
+                                stress_data = lamina.local_properties.thermal_stress
+                            else:
+                                stress_data = lamina.local_properties.thermal_strain
+
+                        self.print_lamina_data(lamina, stress_data, j, file)
 
     def print_lamina_data(self, lamina, stress, i, file):
         """Prints lamina index, coordinate, stress components

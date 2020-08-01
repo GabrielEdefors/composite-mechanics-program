@@ -132,16 +132,18 @@ class Laminate:
     def create_laminate_arrays(self, load_type):
 
         # Initiate stress, strain and coordinates
-        components_global = np.zeros((3, len(self.laminae) * 2))
-        components_local = np.zeros((3, len(self.laminae) * 2))
         z_coordinates = np.zeros((len(self.laminae) * 2))
 
         if load_type == LoadType.thermal:
-            mechanical_stress_global = StressState(components_global, self.coordinate_system, LoadType.thermal)
-            mechanical_stress_local = StressState(components_local, CoordinateSystem.LT, LoadType.thermal)
+            mechanical_stress_global = StressState(np.zeros((3, len(self.laminae) * 2)), self.coordinate_system, LoadType.thermal)
+            mechanical_stress_local = StressState(np.zeros((3, len(self.laminae) * 2)), CoordinateSystem.LT, LoadType.thermal)
+            mechanical_strains_global = StrainState(np.zeros((3, len(self.laminae) * 2)), self.coordinate_system, LoadType.thermal)
+            mechanical_strains_local = StrainState(np.zeros((3, len(self.laminae) * 2)), CoordinateSystem.LT, LoadType.thermal)
         else:
-            mechanical_stress_global = StressState(components_global, self.coordinate_system, LoadType.total)
-            mechanical_stress_local = StressState(components_local, CoordinateSystem.LT, LoadType.total)
+            mechanical_stress_global = StressState(np.zeros((3, len(self.laminae) * 2)), self.coordinate_system, LoadType.total)
+            mechanical_stress_local = StressState(np.zeros((3, len(self.laminae) * 2)), CoordinateSystem.LT, LoadType.total)
+            mechanical_strains_global = StrainState(np.zeros((3, len(self.laminae) * 2)), self.coordinate_system, LoadType.total)
+            mechanical_strains_local = StrainState(np.zeros((3, len(self.laminae) * 2)), CoordinateSystem.LT, LoadType.total)
 
         # Compute mechanical stress caused by the total loads
         for index, lamina in enumerate(self.laminae):
@@ -149,15 +151,19 @@ class Laminate:
             if load_type == LoadType.thermal:
                 mechanical_stress_global.components[:, (2 * index):(2 * index + 2)] = lamina.global_properties.thermal_stress.components
                 mechanical_stress_local.components[:, (2 * index):(2 * index + 2)] = lamina.local_properties.thermal_stress.components
+                mechanical_strains_global.components[:, (2 * index):(2 * index + 2)] = lamina.global_properties.thermal_strain.components
+                mechanical_strains_local.components[:, (2 * index):(2 * index + 2)] = lamina.local_properties.thermal_strain.components
 
             elif load_type == LoadType.total:
                 mechanical_stress_global.components[:, (2 * index):(2 * index + 2)] = lamina.global_properties.total_stress.components
                 mechanical_stress_local.components[:, (2 * index):(2 * index + 2)] = lamina.local_properties.total_stress.components
+                mechanical_strains_global.components[:, (2 * index):(2 * index + 2)] = lamina.global_properties.total_strain.components
+                mechanical_strains_local.components[:, (2 * index):(2 * index + 2)] = lamina.local_properties.total_strain.components
 
             # Create two coordinates per interface, one per lamina
             z_coordinates[2 * index], z_coordinates[2 * index + 1] = lamina.coordinates
 
-        return mechanical_stress_global, mechanical_stress_local, z_coordinates
+        return mechanical_stress_global, mechanical_stress_local, mechanical_strains_global, mechanical_strains_local, z_coordinates
 
     def compute_strains(self, loads, strain_type):
         """Computes strains for a certain outer load specified by loads
