@@ -3,13 +3,18 @@ from PyQt5.QtGui import *
 from PyQt5.QtSvg import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtWidgets import *
+from model import DispCoordinates, Quantity
 
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
+from composite import plot_tools_GUI
 
-import matplotlib as mpl
+import matplotlib.pyplot as plt
+import matplotlib
 import os
-mpl.use('Qt5Agg')
+
+matplotlib.use('Qt5Agg')
+# -*- coding: utf-8 -*-
 
 
 class MainWindow(QMainWindow):
@@ -20,7 +25,7 @@ class MainWindow(QMainWindow):
 
         # Set window properties
         self.setWindowTitle('Composite Calculator 2000')
-        self.resize(700, 600)
+        self.resize(800, 700)
         self.setWindowIcon(QIcon(self.directory + os.path.sep + 'icon.png'))
 
         # View box
@@ -41,6 +46,7 @@ class MainWindow(QMainWindow):
         self.currency_menu.addAction(SEK_currency_action)
 
         # Connect menu bar buttons
+
 
 class View(QGroupBox):
     """ The main window of the GUI
@@ -79,6 +85,7 @@ class CanvasGroup(QGroupBox):
         self.parent = parent
 
         # Connect logic
+        self.model.plot_data.connect(self.plot_data)
 
         # Contents
         self.layout = QVBoxLayout()
@@ -91,11 +98,16 @@ class CanvasGroup(QGroupBox):
         self.setLayout(self.layout)
         self.canvas.draw()
 
-    def plot_data(self, ):
-        pass
-
-
         # Controllers
+
+    def plot_data(self, z_coordinates, quantity, component):
+
+        # Empty canvas axis
+        self.canvas.reset_axes()
+
+        canvas_axes = self.canvas.axes
+        plot_tools_GUI.plot_stress(axes=canvas_axes, coordinates=z_coordinates, quantity=quantity, component=component)
+        self.canvas.draw()
 
 
 class PlotPropertiesGroup(QGroupBox):
@@ -112,22 +124,50 @@ class PlotPropertiesGroup(QGroupBox):
         self.setFlat(True)
 
         # Add buttons
-        self.stress_button = QPushButton("Display Stress Distribution")
-        self.strain_button = QPushButton("Display Stain Distribution")
+        self.local_button = QPushButton("Display In Local Coordinates")
+        self.global_button = QPushButton("Display In Global Coordinates")
         self.layout = QHBoxLayout()
-        self.layout.addWidget(self.stress_button)
-        self.layout.addWidget(self.strain_button)
+        self.layout.addWidget(self.local_button)
+        self.layout.addWidget(self.global_button)
 
 
         # Add dropdown menu
         self.combo_box = QComboBox(self)
-        self.combo_box.addItem(r'$\sigma_x$')
-        self.combo_box.addItem(r'$\sigma_y$')
-        self.combo_box.addItem(r'$\sigma_xy$')
+        self.combo_box.addItem("\u03C3\u2081")
+        self.combo_box.addItem("\u03C3\u2082")
+        self.combo_box.addItem("\u03C3\u2083")
+        self.combo_box.addItem("\u03B5\u2081")
+        self.combo_box.addItem("\u03B5\u2082")
+        self.combo_box.addItem("\u03B5\u2083")
         self.layout.addWidget(self.combo_box)
 
-
         self.setLayout(self.layout)
+
+        # Controllers
+        def change_component():
+
+            if self.combo_box.currentText() == "\u03C3\u2081":
+                self.model.change_plot_component(Quantity.stress, 0)
+            elif self.combo_box.currentText() == "\u03C3\u2082":
+                self.model.change_plot_component(Quantity.stress, 1)
+            elif self.combo_box.currentText() == "\u03C3\u2083":
+                self.model.change_plot_component(Quantity.stress, 2)
+            elif self.combo_box.currentText() == "\u03B5\u2081":
+                self.model.change_plot_component(Quantity.strain, 0)
+            elif self.combo_box.currentText() == "\u03B5\u2082":
+                self.model.change_plot_component(Quantity.strain, 1)
+            elif self.combo_box.currentText() == "\u03B5\u2083":
+                self.model.change_plot_component(Quantity.strain, 2)
+        self.combo_box.currentIndexChanged.connect(change_component)
+
+        def display_local_coordinates():
+            self.model.set_display_coordinates(DispCoordinates.local_system)
+        self.local_button.clicked.connect(display_local_coordinates)
+
+        def display_global_coordinates():
+            self.model.set_display_coordinates(DispCoordinates.global_system)
+        self.local_button.clicked.connect(display_global_coordinates)
+
 
 class InputGroup(QGroupBox):
     """ Group box containing input text boxes
@@ -230,7 +270,11 @@ class Canvas(FigureCanvasQTAgg):
         self.parent = parent
         self.figure = Figure()
         self.axes = self.figure.add_subplot(111)
+        plt.tight_layout()
         super(Canvas, self).__init__(self.figure)
+
+    def reset_axes(self):
+        self.axes.clear()
 
 
 
