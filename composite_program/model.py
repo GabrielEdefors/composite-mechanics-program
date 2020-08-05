@@ -1,7 +1,25 @@
 from composite import read_input_file, plot_stress, FilePrint, LoadType, Laminate
+from coordinate_systems import CoordinateSystem
 from enum import Enum
 from PyQt5.QtCore import *
 import numpy as np
+
+class Quantity(Enum):
+    stress = 1
+    strain = 2
+
+
+class ResultData:
+
+    def __init__(self, stresses_global, stresses_local, strains_global,
+                 strains_local, z_coordinates):
+
+        # Data that should be displayed
+        self.global_stress = stresses_global
+        self.local_stress = stresses_local
+        self.global_strains = strains_global
+        self.local_strains = strains_local
+        self.z_coordinates = z_coordinates
 
 
 class Model(QObject):
@@ -17,17 +35,23 @@ class Model(QObject):
         self.project_name = ""
         self.project_info = dict()
         self.laminate = Laminate
-        self.display_coordinates = DispCoordinates.local_system
 
-        # Laminate stress and strains
-        self.thermal_stresses_global = np.ndarray([])
-        self.thermal_stresses_local = np.ndarray([])
-        self.thermal_strains_global = np.ndarray([])
-        self.thermal_strains_local = np.ndarray([])
-        self.z_coordinates = np.ndarray([])
+        # Object to store the different data
+        self.result_thermal = ResultData
+        self.result_total = ResultData
 
-    def set_display_coordinates(self, new_coordinates: Enum):
-        self.display_coordinates = new_coordinates
+        # Attributes that keeps track of what is currently displayed in canvas
+        self.display_category = self.result_thermal
+        self.display_quantity = Quantity
+        self.display_component = int
+        self.display_coordinates = CoordinateSystem.LT
+        self.z_coordinates = np.ndarray
+
+    def set_display_coordinates(self, new_coordinates: CoordinateSystem):
+        self.result.display_coordinates = new_coordinates
+
+    def set_display_category(self, category: ResultData):
+        self.display_category = category
 
     def set_input_directory(self, input_directory):
         self.input_directory = input_directory
@@ -38,26 +62,29 @@ class Model(QObject):
     def calculate_thermal_stress(self):
 
         self.laminate.compute_thermal_stress()
-        self.thermal_stresses_global, self.thermal_stresses_local, self.thermal_strains_global, \
-        self.thermal_strains_local, self.z_coordinates = self.laminate.create_laminate_arrays(LoadType.thermal)
+        thermal_stresses_global, thermal_stresses_local, thermal_strains_global, \
+            thermal_strains_local, z_coordinates = self.laminate.create_laminate_arrays(LoadType.thermal)
+        self.z_coordinates = z_coordinates
 
-        # Plot the local thermal stress component 0 as default
-        self.plot_data.emit(self.z_coordinates, self.thermal_stresses_local, 0)
+        # Create result object for thermal loads
+        self.result_thermal = ResultData(thermal_stresses_global, thermal_stresses_local, thermal_strains_global, \
+            thermal_strains_local, z_coordinates)
 
-    def change_plot_component(self, quantity: Enum, component: int):
+        # Plot the local thermal stress component 0 in local coordinates as default
+        self.set_plot_component(0)
+        self.set_display_coordinates(CoordinateSystem.LT)
+        self.set_plot_quantity(Quantity.stress)
+        self.display_category = self.result_thermal
+        self.plot_display_data.emit()
 
-        # Redraw canvas with new component
-        if self.display_coordinates == DispCoordinates.local_system:
-            if quantity == Quantity.stress:
-                self.plot_data.emit(self.z_coordinates, self.thermal_stresses_local, component)
-            elif quantity == Quantity.strain:
-                self.plot_data.emit(self.z_coordinates, self.thermal_strains_local, component)
+    def set_plot_component(self, component: int):
+        self.display_component = component
 
-        elif self.display_coordinates == DispCoordinates.global_system:
-            if quantity == Quantity.stress:
-                self.plot_data.emit(self.z_coordinates, self.thermal_stresses_global, component)
-            elif quantity == Quantity.strain:
-                self.plot_data.emit(self.z_coordinates, self.thermal_strains_global, component)
+    def set_plot_quantity(self, quantity: Quantity):
+        self.display_category = quantity
+
+    def change_display_coordinates(self, coordinates: CoordinateSystem):
+        self.display_coordinates = coordinates
 
     def read_input_file(self):
 
@@ -65,11 +92,3 @@ class Model(QObject):
         self.laminate, self.project_info = read_input_file(filepath=self.input_directory)
 
 
-class DispCoordinates(Enum):
-    local_system = 1
-    global_system = 2
-
-
-class Quantity(Enum):
-    stress = 1
-    strain = 2

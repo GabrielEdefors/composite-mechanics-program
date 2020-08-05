@@ -3,7 +3,8 @@ from PyQt5.QtGui import *
 from PyQt5.QtSvg import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtWidgets import *
-from model import DispCoordinates, Quantity
+from model import Quantity
+from coordinate_systems import CoordinateSystem
 
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
@@ -25,7 +26,7 @@ class MainWindow(QMainWindow):
 
         # Set window properties
         self.setWindowTitle('Composite Calculator 2000')
-        self.resize(800, 700)
+        self.resize(700, 650)
         self.setWindowIcon(QIcon(self.directory + os.path.sep + 'icon.png'))
 
         # View box
@@ -85,7 +86,7 @@ class CanvasGroup(QGroupBox):
         self.parent = parent
 
         # Connect logic
-        self.model.plot_data.connect(self.plot_data)
+        self.model.plot_display_data.connect(self.plot_data)
 
         # Contents
         self.layout = QVBoxLayout()
@@ -100,13 +101,21 @@ class CanvasGroup(QGroupBox):
 
         # Controllers
 
-    def plot_data(self, z_coordinates, quantity, component):
+    def plot_data(self):
 
         # Empty canvas axis
         self.canvas.reset_axes()
 
         canvas_axes = self.canvas.axes
+
+        # Här måste rätt data plockas ut för att plotta, byt quantity!!!
+
+        # Retrieve the data from the display_quantity
+        z_coordinates = self.model.z_coordinates
+        quantity = self.model.display_quantity
+        component = self.model.display_component
         plot_tools_GUI.plot_stress(axes=canvas_axes, coordinates=z_coordinates, quantity=quantity, component=component)
+        self.canvas.figure.tight_layout(w_pad=1)
         self.canvas.draw()
 
 
@@ -147,26 +156,39 @@ class PlotPropertiesGroup(QGroupBox):
         def change_component():
 
             if self.combo_box.currentText() == "\u03C3\u2081":
-                self.model.change_plot_component(Quantity.stress, 0)
+                self.model.set_plot_component(0)
+                self.model.set_plot_quantity(Quantity.stress)
             elif self.combo_box.currentText() == "\u03C3\u2082":
-                self.model.change_plot_component(Quantity.stress, 1)
+                self.model.set_plot_component(1)
+                self.model.set_plot_quantity(Quantity.stress)
             elif self.combo_box.currentText() == "\u03C3\u2083":
-                self.model.change_plot_component(Quantity.stress, 2)
+                self.model.set_plot_component(2)
+                self.model.set_plot_quantity(Quantity.stress)
             elif self.combo_box.currentText() == "\u03B5\u2081":
-                self.model.change_plot_component(Quantity.strain, 0)
+                self.model.set_plot_component(0)
+                self.model.set_plot_quantity(Quantity.strain)
             elif self.combo_box.currentText() == "\u03B5\u2082":
-                self.model.change_plot_component(Quantity.strain, 1)
+                self.model.set_plot_component(1)
+                self.model.set_plot_quantity(Quantity.strain)
             elif self.combo_box.currentText() == "\u03B5\u2083":
-                self.model.change_plot_component(Quantity.strain, 2)
+                self.model.set_plot_component(2)
+                self.model.set_plot_quantity(Quantity.strain)
         self.combo_box.currentIndexChanged.connect(change_component)
 
         def display_local_coordinates():
-            self.model.set_display_coordinates(DispCoordinates.local_system)
+            self.model.set_display_coordinates(CoordinateSystem.LT)
+
+            # Redraw the canvas
+
         self.local_button.clicked.connect(display_local_coordinates)
 
         def display_global_coordinates():
-            self.model.set_display_coordinates(DispCoordinates.global_system)
-        self.local_button.clicked.connect(display_global_coordinates)
+            self.model.set_display_coordinates(CoordinateSystem.xy)
+
+            # Redraw the canvas
+
+
+        self.global_button.clicked.connect(display_global_coordinates)
 
 
 class InputGroup(QGroupBox):
@@ -270,7 +292,6 @@ class Canvas(FigureCanvasQTAgg):
         self.parent = parent
         self.figure = Figure()
         self.axes = self.figure.add_subplot(111)
-        plt.tight_layout()
         super(Canvas, self).__init__(self.figure)
 
     def reset_axes(self):

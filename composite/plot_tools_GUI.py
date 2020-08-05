@@ -17,13 +17,14 @@ def plot_stress(axes, coordinates, quantity, component):
     colors = ['blue', 'green', 'red']
 
     if isinstance(quantity, StressState):
-        x_labels_global = [r'$\sigma_x$' + '[Pa]', r'$\sigma_y$' + '[Pa]', r'$\sigma_{xy}$' + '[Pa]']
-        x_labels_local = [r'$\sigma_L$' + '[Pa]', r'$\sigma_T$' + '[Pa]', r'$\sigma_{LT}$' + '[Pa]']
+        x_labels_global = [r'$\sigma_x$' + ' [MPa]', r'$\sigma_y$' + ' [MPa]', r'$\sigma_{xy}$' + ' [MPa]']
+        x_labels_local = [r'$\sigma_L$' + ' [MPa]', r'$\sigma_T$' + ' [MPa]', r'$\sigma_{LT}$' + ' [MPa]']
+        axes.plot(quantity.components[component, :] / 1e6, coordinates * 1e3, colors[component])
     else:
-        x_labels_global = [r'$\epsilon_x$' + '[-]', r'$\epsilon_y$' + '[-]', r'$\epsilon_{xy}$' + '[-]']
-        x_labels_local = [r'$\epsilon_L$' + '[-]', r'$\epsilon_T$' + '[-]', r'$\epsilon_{LT}$' + '[-]']
+        x_labels_global = [r'$\epsilon_x$' + ' [1e-3]', r'$\epsilon_y$' + ' [1e-3]', r'$\epsilon_{xy}$' + ' [1e-3]']
+        x_labels_local = [r'$\epsilon_L$' + ' [1e-3]', r'$\epsilon_T$' + ' [1e-3]', r'$\epsilon_{LT}$' + ' [1e-3]']
+        axes.plot(quantity.components[component, :] * 1e3, coordinates * 1e3, colors[component])
 
-    axes.plot(quantity.components[component, :], coordinates * 1e3, colors[component])
     axes.grid(True)
 
     axes.set_ylabel('z ' + "[mm]")
