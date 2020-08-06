@@ -4,6 +4,7 @@ from enum import Enum
 from PyQt5.QtCore import *
 import numpy as np
 
+
 class Quantity(Enum):
     stress = 1
     strain = 2
@@ -27,7 +28,7 @@ class Model(QObject):
     """
 
     # Establish signals
-    plot_data = pyqtSignal(np.ndarray, object, int)
+    plot_display_data = pyqtSignal()
 
     def __init__(self):
         super().__init__()
@@ -41,17 +42,17 @@ class Model(QObject):
         self.result_total = ResultData
 
         # Attributes that keeps track of what is currently displayed in canvas
-        self.display_category = self.result_thermal
+        self.display_load_type = self.result_thermal
         self.display_quantity = Quantity
         self.display_component = int
         self.display_coordinates = CoordinateSystem.LT
         self.z_coordinates = np.ndarray
 
     def set_display_coordinates(self, new_coordinates: CoordinateSystem):
-        self.result.display_coordinates = new_coordinates
+        self.display_coordinates = new_coordinates
 
-    def set_display_category(self, category: ResultData):
-        self.display_category = category
+    def set_display_category(self, load_type: ResultData):
+        self.display_load_type = load_type
 
     def set_input_directory(self, input_directory):
         self.input_directory = input_directory
@@ -71,17 +72,35 @@ class Model(QObject):
             thermal_strains_local, z_coordinates)
 
         # Plot the local thermal stress component 0 in local coordinates as default
-        self.set_plot_component(0)
+        self.set_display_component(0)
         self.set_display_coordinates(CoordinateSystem.LT)
-        self.set_plot_quantity(Quantity.stress)
-        self.display_category = self.result_thermal
+        self.set_display_quantity(Quantity.stress)
+        self.display_load_type = self.result_thermal
         self.plot_display_data.emit()
 
-    def set_plot_component(self, component: int):
+    def calculate_total_stress(self):
+
+        self.laminate.compute_total_stress()
+        total_stresses_global, total_stresses_local, total_strains_global, \
+            total_strains_local, z_coordinates = self.laminate.create_laminate_arrays(LoadType.total)
+        self.z_coordinates = z_coordinates
+
+        # Create result object for thermal loads
+        self.result_total = ResultData(total_stresses_global, total_stresses_local, total_strains_global, \
+                            total_strains_local, z_coordinates)
+
+        # Plot the local total stress component 0 in local coordinates as default
+        self.set_display_component(0)
+        self.set_display_coordinates(CoordinateSystem.LT)
+        self.set_display_quantity(Quantity.stress)
+        self.display_load_type = self.result_total
+        self.plot_display_data.emit()
+
+    def set_display_component(self, component: int):
         self.display_component = component
 
-    def set_plot_quantity(self, quantity: Quantity):
-        self.display_category = quantity
+    def set_display_quantity(self, quantity: Quantity):
+        self.display_quantity = quantity
 
     def change_display_coordinates(self, coordinates: CoordinateSystem):
         self.display_coordinates = coordinates

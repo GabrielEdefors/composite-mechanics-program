@@ -37,6 +37,12 @@ fig_local = plt.figure(4)
 fig_local.suptitle('Local stresses in laminate', fontsize=16)
 plot_stress(axes=axes_local, coordinates=z_coordinates, quantity=total_stresses_local)
 
+# Plot global stresses
+axes_global = plt.subplots(nrows=1, ncols=3, constrained_layout=True, figsize=(10, 7))[1]
+fig_global = plt.figure(5)
+fig_global.suptitle('Global strains in laminate', fontsize=16)
+plot_stress(axes=axes_global, coordinates=z_coordinates, quantity=total_strains_global)
+
 plt.show()
 
 # Write results to file ================================================================================================

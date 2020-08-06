@@ -60,17 +60,17 @@ class View(QGroupBox):
         self.parent = parent
 
         # Create subgroups
-        self.button_group = CanvasGroup(self.model, self)
+        self.canvas_group = CanvasGroup(self.model, self)
         self.input_group = InputGroup(self.model, self)
-        self.calulate_group = CalculateGroup(self.model, self)
+        self.calculate_group = CalculateGroup(self.model, self)
 
         # Create main layout of the window and add subgroups
         self.main_layout = QHBoxLayout()
         self.left_panel_layout = QVBoxLayout()
         self.left_panel_layout.addWidget(self.input_group)
-        self.left_panel_layout.addWidget(self.calulate_group)
+        self.left_panel_layout.addWidget(self.calculate_group)
         self.main_layout.addLayout(self.left_panel_layout)
-        self.main_layout.addWidget(self.button_group)
+        self.main_layout.addWidget(self.canvas_group)
         self.setLayout(self.main_layout)
 
 
@@ -108,13 +108,24 @@ class CanvasGroup(QGroupBox):
 
         canvas_axes = self.canvas.axes
 
-        # Här måste rätt data plockas ut för att plotta, byt quantity!!!
-
         # Retrieve the data from the display_quantity
-        z_coordinates = self.model.z_coordinates
         quantity = self.model.display_quantity
-        component = self.model.display_component
-        plot_tools_GUI.plot_stress(axes=canvas_axes, coordinates=z_coordinates, quantity=quantity, component=component)
+        coordinates = self.model.display_coordinates
+
+        if quantity == Quantity.stress and coordinates == CoordinateSystem.LT:
+            array_to_plot = self.model.display_load_type.local_stress
+            self.canvas.set_axis_title(self.model.display_load_type.local_stress.stress_type, quantity, self.model.display_component)
+        elif quantity == Quantity.stress and coordinates == CoordinateSystem.xy:
+            array_to_plot = self.model.display_load_type.global_stress
+            self.canvas.set_axis_title(self.model.display_load_type.global_stress.stress_type, quantity, self.model.display_component)
+        elif quantity == Quantity.strain and coordinates == CoordinateSystem.LT:
+            array_to_plot = self.model.display_load_type.local_strains
+            self.canvas.set_axis_title(self.model.display_load_type.local_strains.strain_type, quantity, self.model.display_component)
+        else:
+            array_to_plot = self.model.display_load_type.global_strains
+            self.canvas.set_axis_title(self.model.display_load_type.local_strains.strain_type, quantity, self.model.display_component)
+
+        plot_tools_GUI.plot_stress(axes=canvas_axes, coordinates=self.model.z_coordinates, quantity=array_to_plot, component=self.model.display_component)
         self.canvas.figure.tight_layout(w_pad=1)
         self.canvas.draw()
 
@@ -156,37 +167,42 @@ class PlotPropertiesGroup(QGroupBox):
         def change_component():
 
             if self.combo_box.currentText() == "\u03C3\u2081":
-                self.model.set_plot_component(0)
-                self.model.set_plot_quantity(Quantity.stress)
+                self.model.set_display_component(0)
+                self.model.set_display_quantity(Quantity.stress)
             elif self.combo_box.currentText() == "\u03C3\u2082":
-                self.model.set_plot_component(1)
-                self.model.set_plot_quantity(Quantity.stress)
+                self.model.set_display_component(1)
+                self.model.set_display_quantity(Quantity.stress)
             elif self.combo_box.currentText() == "\u03C3\u2083":
-                self.model.set_plot_component(2)
-                self.model.set_plot_quantity(Quantity.stress)
+                self.model.set_display_component(2)
+                self.model.set_display_quantity(Quantity.stress)
             elif self.combo_box.currentText() == "\u03B5\u2081":
-                self.model.set_plot_component(0)
-                self.model.set_plot_quantity(Quantity.strain)
+                self.model.set_display_component(0)
+                self.model.set_display_quantity(Quantity.strain)
             elif self.combo_box.currentText() == "\u03B5\u2082":
-                self.model.set_plot_component(1)
-                self.model.set_plot_quantity(Quantity.strain)
+                self.model.set_display_component(1)
+                self.model.set_display_quantity(Quantity.strain)
             elif self.combo_box.currentText() == "\u03B5\u2083":
-                self.model.set_plot_component(2)
-                self.model.set_plot_quantity(Quantity.strain)
+                self.model.set_display_component(2)
+                self.model.set_display_quantity(Quantity.strain)
+
+            # Redraw canvas
+            self.parent.parent.canvas_group.plot_data()
+
         self.combo_box.currentIndexChanged.connect(change_component)
 
         def display_local_coordinates():
             self.model.set_display_coordinates(CoordinateSystem.LT)
 
-            # Redraw the canvas
+            # Redraw canvas
+            self.parent.parent.canvas_group.plot_data()
 
         self.local_button.clicked.connect(display_local_coordinates)
 
         def display_global_coordinates():
             self.model.set_display_coordinates(CoordinateSystem.xy)
 
-            # Redraw the canvas
-
+            # Redraw canvas
+            self.parent.parent.canvas_group.plot_data()
 
         self.global_button.clicked.connect(display_global_coordinates)
 
@@ -220,7 +236,6 @@ class InputGroup(QGroupBox):
         self.main_layout.addLayout(self.line_edit_layout)
         self.setLayout(self.main_layout)
 
-
         # Controllers
         def select_file():
 
@@ -252,7 +267,6 @@ class InputGroup(QGroupBox):
 
         self.input_project_name.returnPressed.connect(update_project_name)
 
-
     def update_placeholder_text(self, new_text):
         self.input_project_name.setPlaceholderText(new_text)
 
@@ -283,6 +297,10 @@ class CalculateGroup(QGroupBox):
             self.model.calculate_thermal_stress()
         self.calculate_thermal_button.clicked.connect(calculate_thermal_stress)
 
+        def calculate_total_stress():
+            self.model.calculate_total_stress()
+        self.calculate_total_button.clicked.connect(calculate_total_stress)
+
 
 class Canvas(FigureCanvasQTAgg):
     """ Canvas that hold the stress and strain plots
@@ -296,6 +314,10 @@ class Canvas(FigureCanvasQTAgg):
 
     def reset_axes(self):
         self.axes.clear()
+
+    def set_axis_title(self, load_type, quantity, component):
+        title = load_type.name.capitalize() + ' ' + quantity.name + ', component ' + str(component + 1)
+        self.axes.set_title(title)
 
 
 
