@@ -1,16 +1,11 @@
-from PyQt5.QtCore import *
 from PyQt5.QtGui import *
-from PyQt5.QtSvg import *
-from PyQt5.QtWidgets import *
 from PyQt5.QtWidgets import *
 from model import Quantity
 from coordinate_systems import CoordinateSystem
-
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
-from composite import plot_tools_GUI
+from composite import plot_tools_GUI, LoadType
 
-import matplotlib.pyplot as plt
 import matplotlib
 import os
 
@@ -33,7 +28,7 @@ class MainWindow(QMainWindow):
         self.view = View(model, self)
         self.setCentralWidget(self.view)
 
-        # Add menu bar with file and currency
+        # Add menu bar with file and Export options
         self.menu_bar = self.menuBar()
         self.file_menu = self.menu_bar.addMenu('File')
         self.currency_menu = self.menu_bar.addMenu('Currency')
@@ -146,49 +141,64 @@ class PlotPropertiesGroup(QGroupBox):
         # Add buttons
         self.local_button = QPushButton("Display In Local Coordinates")
         self.global_button = QPushButton("Display In Global Coordinates")
-        self.layout = QHBoxLayout()
-        self.layout.addWidget(self.local_button)
-        self.layout.addWidget(self.global_button)
+        self.horizontal_layout = QHBoxLayout()
+        self.horizontal_layout.addWidget(self.local_button)
+        self.horizontal_layout.addWidget(self.global_button)
 
+        # Add drop down for choosing between thermal and total results
+        self.combo_box_loadtype = QComboBox(self)
+        self.combo_box_loadtype.addItem("Select Load Case")
+        self.horizontal_layout.addWidget(self.combo_box_loadtype)
 
-        # Add dropdown menu
-        self.combo_box = QComboBox(self)
-        self.combo_box.addItem("\u03C3\u2081")
-        self.combo_box.addItem("\u03C3\u2082")
-        self.combo_box.addItem("\u03C3\u2083")
-        self.combo_box.addItem("\u03B5\u2081")
-        self.combo_box.addItem("\u03B5\u2082")
-        self.combo_box.addItem("\u03B5\u2083")
-        self.layout.addWidget(self.combo_box)
+        # Add drop down menu for tensor components
+        self.combo_box_component = QComboBox(self)
+        self.combo_box_component.addItem("\u03C3\u2081")
+        self.combo_box_component.addItem("\u03C3\u2082")
+        self.combo_box_component.addItem("\u03C3\u2083")
+        self.combo_box_component.addItem("\u03B5\u2081")
+        self.combo_box_component.addItem("\u03B5\u2082")
+        self.combo_box_component.addItem("\u03B5\u2083")
+        self.horizontal_layout.addWidget(self.combo_box_component)
 
-        self.setLayout(self.layout)
+        self.setLayout(self.horizontal_layout)
 
         # Controllers
         def change_component():
 
-            if self.combo_box.currentText() == "\u03C3\u2081":
+            if self.combo_box_component.currentText() == "\u03C3\u2081":
                 self.model.set_display_component(0)
                 self.model.set_display_quantity(Quantity.stress)
-            elif self.combo_box.currentText() == "\u03C3\u2082":
+            elif self.combo_box_component.currentText() == "\u03C3\u2082":
                 self.model.set_display_component(1)
                 self.model.set_display_quantity(Quantity.stress)
-            elif self.combo_box.currentText() == "\u03C3\u2083":
+            elif self.combo_box_component.currentText() == "\u03C3\u2083":
                 self.model.set_display_component(2)
                 self.model.set_display_quantity(Quantity.stress)
-            elif self.combo_box.currentText() == "\u03B5\u2081":
+            elif self.combo_box_component.currentText() == "\u03B5\u2081":
                 self.model.set_display_component(0)
                 self.model.set_display_quantity(Quantity.strain)
-            elif self.combo_box.currentText() == "\u03B5\u2082":
+            elif self.combo_box_component.currentText() == "\u03B5\u2082":
                 self.model.set_display_component(1)
                 self.model.set_display_quantity(Quantity.strain)
-            elif self.combo_box.currentText() == "\u03B5\u2083":
+            elif self.combo_box_component.currentText() == "\u03B5\u2083":
                 self.model.set_display_component(2)
                 self.model.set_display_quantity(Quantity.strain)
+
+            # Redraw canvass
+            self.parent.parent.canvas_group.plot_data()
+
+        self.combo_box_component.currentIndexChanged.connect(change_component)
+
+        def change_loadtype():
+
+            if self.combo_box_loadtype.currentText() == 'Thermal':
+                self.model.set_display_loadtype(LoadType.thermal)
+            elif self.combo_box_loadtype.currentText() == 'Combined':
+                self.model.set_display_loadtype(LoadType.combined)
 
             # Redraw canvas
             self.parent.parent.canvas_group.plot_data()
-
-        self.combo_box.currentIndexChanged.connect(change_component)
+        self.combo_box_loadtype.currentIndexChanged.connect(change_loadtype)
 
         def display_local_coordinates():
             self.model.set_display_coordinates(CoordinateSystem.LT)
@@ -205,6 +215,13 @@ class PlotPropertiesGroup(QGroupBox):
             self.parent.parent.canvas_group.plot_data()
 
         self.global_button.clicked.connect(display_global_coordinates)
+
+    def add_load_types(self, load_type: LoadType):
+
+        if load_type == LoadType.thermal:
+            self.combo_box_loadtype.addItem("Thermal")
+        else:
+            self.combo_box_loadtype.addItem("Combined")
 
 
 class InputGroup(QGroupBox):
@@ -285,21 +302,33 @@ class CalculateGroup(QGroupBox):
         self.parent = parent
 
         self.layout = QVBoxLayout()
-        self.calculate_thermal_button = QPushButton("Calculate Thermal Stress")
-        self.calculate_total_button = QPushButton("Calculate Total Stress")
-        self.layout.addWidget(self.calculate_thermal_button)
-        self.layout.addWidget(self.calculate_total_button)
+
+        self.check_box_thermal = QCheckBox("Calculate Results Due to Thermal Loading")
+        self.check_box_total = QCheckBox("Calculate Results Due to Combined Loading")
+        self.calculate_button = QPushButton("Calculate")
+        self.layout.addWidget(self.check_box_thermal)
+        self.layout.addWidget(self.check_box_total)
+        self.layout.addWidget(self.calculate_button)
+
         self.setLayout(self.layout)
         self.layout.addStretch(1)
 
         # Controllers
-        def calculate_thermal_stress():
-            self.model.calculate_thermal_stress()
-        self.calculate_thermal_button.clicked.connect(calculate_thermal_stress)
+        def calculate():
+            calculate_thermal = False
+            calculate_total = False
+            if self.check_box_thermal.isChecked() is True:
+                calculate_thermal = True
+                self.parent.canvas_group.plot_properties.add_load_types(LoadType.thermal)
+            if self.check_box_total.isChecked() is True:
+                calculate_total = True
+                self.parent.canvas_group.plot_properties.add_load_types(LoadType.combined)
+            self.model.calculate(calculate_thermal, calculate_total)
+        self.calculate_button.clicked.connect(calculate)
 
-        def calculate_total_stress():
-            self.model.calculate_total_stress()
-        self.calculate_total_button.clicked.connect(calculate_total_stress)
+        # def calculate_total_stress():
+        #     self.model.calculate_total_stress()
+        # self.calculate_total_button.clicked.connect(calculate_total_stress)
 
 
 class Canvas(FigureCanvasQTAgg):

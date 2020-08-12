@@ -48,6 +48,13 @@ class Model(QObject):
         self.display_coordinates = CoordinateSystem.LT
         self.z_coordinates = np.ndarray
 
+    def set_display_loadtype(self, load_type: LoadType):
+
+        if load_type == LoadType.thermal:
+            self.display_load_type = self.result_thermal
+        else:
+            self.display_load_type = self.result_total
+
     def set_display_coordinates(self, new_coordinates: CoordinateSystem):
         self.display_coordinates = new_coordinates
 
@@ -59,6 +66,13 @@ class Model(QObject):
 
     def set_project_name(self, name):
         self.project_name = name
+
+    def calculate(self, thermal_stress, total_stress):
+
+        if thermal_stress is True:
+            self.calculate_thermal_stress()
+        if total_stress is True:
+            self.calculate_total_stress()
 
     def calculate_thermal_stress(self):
 
@@ -82,7 +96,7 @@ class Model(QObject):
 
         self.laminate.compute_total_stress()
         total_stresses_global, total_stresses_local, total_strains_global, \
-            total_strains_local, z_coordinates = self.laminate.create_laminate_arrays(LoadType.total)
+            total_strains_local, z_coordinates = self.laminate.create_laminate_arrays(LoadType.combined)
         self.z_coordinates = z_coordinates
 
         # Create result object for thermal loads
@@ -109,5 +123,6 @@ class Model(QObject):
 
         # Create a laminate instance
         self.laminate, self.project_info = read_input_file(filepath=self.input_directory)
+
 
 

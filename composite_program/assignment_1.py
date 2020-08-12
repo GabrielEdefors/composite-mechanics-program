@@ -23,7 +23,7 @@ plot_stress(axes=axes_local, coordinates=z_coordinates, quantity=thermal_stresse
 
 # Total stress =========================================================================================================
 laminate.compute_total_stress()
-total_stresses_global, total_stresses_local, total_strains_global, total_strains_local, z_coordinates = laminate.create_laminate_arrays(LoadType.total)
+total_stresses_global, total_stresses_local, total_strains_global, total_strains_local, z_coordinates = laminate.create_laminate_arrays(LoadType.combined)
 
 # Plot global stresses
 axes_global = plt.subplots(nrows=1, ncols=3, constrained_layout=True, figsize=(10, 7))[1]
@@ -50,6 +50,6 @@ filename = 'stress'
 printobj = FilePrint({'PROJECT_INFO': project_info}, filename)
 printobj.print_project_info()
 printobj.print_output_data(laminate, load_type=LoadType.thermal)
-printobj.print_output_data(laminate, load_type=LoadType.total)
+printobj.print_output_data(laminate, load_type=LoadType.combined)
 
 

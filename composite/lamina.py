@@ -248,7 +248,7 @@ class GlobalLaminaProperties:
             self.thermal_strain = StrainState(mechanical_strains, self.coordinate_system, midplane_strains.strain_type)
             self.lamina.local_properties.compute_thermal_strains()
 
-        elif midplane_strains.strain_type == LoadType.total:
+        elif midplane_strains.strain_type == LoadType.combined:
             self.total_strain = StrainState(mechanical_strains, self.coordinate_system, midplane_strains.strain_type)
             self.lamina.local_properties.compute_total_strains()
 
@@ -274,7 +274,7 @@ class GlobalLaminaProperties:
             self.thermal_stress.components[:, 1, np.newaxis] = mechanical_stress[:, 1, np.newaxis]
             self.lamina.local_properties.compute_thermal_stress()
 
-        elif strains.strain_type == LoadType.total:
+        elif strains.strain_type == LoadType.combined:
             self.total_stress.components[:, 0, np.newaxis] = mechanical_stress[:, 0, np.newaxis]
             self.total_stress.components[:, 1, np.newaxis] = mechanical_stress[:, 1, np.newaxis]
             self.lamina.local_properties.compute_total_stress()

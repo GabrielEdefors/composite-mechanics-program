@@ -81,7 +81,7 @@ class FilePrint:
 
             for i in range(2):
                 # Print section
-                if load_type == LoadType.total:
+                if load_type == LoadType.combined:
                     self.print_title(total_header[i], file)
                 else:
                     self.print_title(thermal_header[i], file)
@@ -92,7 +92,7 @@ class FilePrint:
                 # Print global stress
                 for lamina in laminate.laminae:
                     for i in range(2):
-                        if load_type == LoadType.total:
+                        if load_type == LoadType.combined:
                             stress_data = lamina.global_properties.total_stress
                         else:
                             stress_data = lamina.global_properties.thermal_stress
@@ -106,7 +106,7 @@ class FilePrint:
                 # Print local stress
                 for lamina in laminate.laminae:
                     for j in range(2):
-                        if load_type == LoadType.total:
+                        if load_type == LoadType.combined:
                             if i == 0:
                                 stress_data = lamina.local_properties.total_stress
                             else:

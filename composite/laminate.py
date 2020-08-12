@@ -120,7 +120,7 @@ class Laminate:
         total_load = self.thermal_load_vector + mechanical_load_vector
 
         # Calculate the mid-plane strains caused by the thermal forces and moments
-        midplane_strains, curvatures = self.compute_strains(total_load, LoadType.total)
+        midplane_strains, curvatures = self.compute_strains(total_load, LoadType.combined)
 
         for index, lamina in enumerate(self.laminae):
             # Compute global strains in lamina
@@ -140,10 +140,10 @@ class Laminate:
             mechanical_strains_global = StrainState(np.zeros((3, len(self.laminae) * 2)), self.coordinate_system, LoadType.thermal)
             mechanical_strains_local = StrainState(np.zeros((3, len(self.laminae) * 2)), CoordinateSystem.LT, LoadType.thermal)
         else:
-            mechanical_stress_global = StressState(np.zeros((3, len(self.laminae) * 2)), self.coordinate_system, LoadType.total)
-            mechanical_stress_local = StressState(np.zeros((3, len(self.laminae) * 2)), CoordinateSystem.LT, LoadType.total)
-            mechanical_strains_global = StrainState(np.zeros((3, len(self.laminae) * 2)), self.coordinate_system, LoadType.total)
-            mechanical_strains_local = StrainState(np.zeros((3, len(self.laminae) * 2)), CoordinateSystem.LT, LoadType.total)
+            mechanical_stress_global = StressState(np.zeros((3, len(self.laminae) * 2)), self.coordinate_system, LoadType.combined)
+            mechanical_stress_local = StressState(np.zeros((3, len(self.laminae) * 2)), CoordinateSystem.LT, LoadType.combined)
+            mechanical_strains_global = StrainState(np.zeros((3, len(self.laminae) * 2)), self.coordinate_system, LoadType.combined)
+            mechanical_strains_local = StrainState(np.zeros((3, len(self.laminae) * 2)), CoordinateSystem.LT, LoadType.combined)
 
         # Compute mechanical stress caused by the total loads
         for index, lamina in enumerate(self.laminae):
@@ -154,7 +154,7 @@ class Laminate:
                 mechanical_strains_global.components[:, (2 * index):(2 * index + 2)] = lamina.global_properties.thermal_strain.components
                 mechanical_strains_local.components[:, (2 * index):(2 * index + 2)] = lamina.local_properties.thermal_strain.components
 
-            elif load_type == LoadType.total:
+            elif load_type == LoadType.combined:
                 mechanical_stress_global.components[:, (2 * index):(2 * index + 2)] = lamina.global_properties.total_stress.components
                 mechanical_stress_local.components[:, (2 * index):(2 * index + 2)] = lamina.local_properties.total_stress.components
                 mechanical_strains_global.components[:, (2 * index):(2 * index + 2)] = lamina.global_properties.total_strain.components
@@ -189,7 +189,7 @@ class Laminate:
 
 class LoadType(Enum):
     thermal = 1
-    total = 2
+    combined = 2
 
     def __eq__(self, other):
         return self.value == other.value
