@@ -4,7 +4,7 @@ from model import Quantity
 from coordinate_systems import CoordinateSystem
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
-from composite import plot_tools_GUI, LoadType
+from composite import plot_tools_GUI, LoadType, print_tools
 
 import matplotlib
 import os
@@ -31,17 +31,25 @@ class MainWindow(QMainWindow):
         # Add menu bar with file and Export options
         self.menu_bar = self.menuBar()
         self.file_menu = self.menu_bar.addMenu('File')
-        self.currency_menu = self.menu_bar.addMenu('Currency')
+        self.export_menu = self.menu_bar.addMenu('Export')
 
         # Actions for file menu
         quit_action = QAction('Quit', self)
         self.file_menu.addAction(quit_action)
 
         # Actions for Currency menu
-        SEK_currency_action = QAction('SEK', self)
-        self.currency_menu.addAction(SEK_currency_action)
+        export_textfile_action = QAction('Numerical Results', self)
+        export_graph_action = QAction('Graphs', self)
+        self.export_menu.addAction(export_textfile_action)
+        self.export_menu.addAction(export_graph_action)
 
         # Connect menu bar buttons
+        def export_textfile():
+            # Open a new window containing export options
+            self.export_textfile_window = ExportTextFileWindow(self.model, self)
+            self.export_textfile_window.show()
+
+        export_textfile_action.triggered.connect(export_textfile)
 
 
 class View(QGroupBox):
@@ -239,7 +247,6 @@ class InputGroup(QGroupBox):
         self.buttons_layout = QVBoxLayout()
         self.input_file_button = QPushButton("Select Input File")
         self.buttons_layout.addWidget(self.input_file_button)
-        #self.setLayout(self.buttons_layout)
 
         # Line edit layout
         self.line_edit_layout = QFormLayout()
@@ -347,6 +354,35 @@ class Canvas(FigureCanvasQTAgg):
     def set_axis_title(self, load_type, quantity, component):
         title = load_type.name.capitalize() + ' ' + quantity.name + ', component ' + str(component + 1)
         self.axes.set_title(title)
+
+
+class ExportTextFileWindow(QMainWindow):
+    def __init__(self, model, parent):
+        super().__init__()
+        self.model = model
+        self.parent = parent
+
+        # Set window properties
+        self.setWindowTitle('Export Options')
+        self.resize(300, 200)
+
+        self.layout = QVBoxLayout()
+        self.save_as_button = QPushButton("Save As")
+        self.layout.addWidget(self.save_as_button)
+        self.widget = QWidget()
+        self.widget.setLayout(self.layout)
+        self.setCentralWidget(self.widget)
+
+        # Controllers
+        def save_as():
+            self.filepath, self.filetype = QFileDialog.getSaveFileName(self, 'Save As', self.parent.directory,
+                                                           "Text Files (*.txt)")
+
+            self.model.export_text_file(self.filepath)
+
+        self.save_as_button.clicked.connect(save_as)
+
+
 
 
 

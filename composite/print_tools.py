@@ -15,8 +15,13 @@ class FilePrint:
 
      """
 
-    def __init__(self, info, filename):
-        self.file_path = Path.cwd().joinpath('output', filename + '.txt')
+    def __init__(self, info, filename=None, filepath=None):
+
+        if filename:
+            self.file_path = Path.cwd().joinpath('output', filename + '.txt')
+        elif filepath:
+            self.file_path = filepath
+
         self.info = info
         self.column_width = 18
         self.page_width = self.column_width * 6
@@ -76,7 +81,7 @@ class FilePrint:
                             ['INDEX', 'ANGLE', 'Z-COORDINATE', 'STRAIN_X', 'STRAIN_Y', 'STRAIN_XY']]
             header_local = [['INDEX', 'ANGLE', 'Z-COORDINATE', 'STRESS_L', 'STRESS_T', 'STRESS_LT'],
                             ['INDEX', 'ANGLE', 'Z-COORDINATE', 'STRAIN_L', 'STRAIN_T', 'STRAIN_LT']]
-            total_header = ['TOTAL STRESS DATA', 'TOTAL STRAIN DATA']
+            total_header = ['COMBINED STRESS DATA', 'COMBINED STRAIN DATA']
             thermal_header = ['THERMAL STRESS DATA', 'THERMAL STRAIN DATA']
 
             for i in range(2):

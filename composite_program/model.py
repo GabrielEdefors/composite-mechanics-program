@@ -66,6 +66,8 @@ class Model(QObject):
 
     def set_project_name(self, name):
         self.project_name = name
+        self.project_info['NAME'] = [name]
+        a = 1
 
     def calculate(self, thermal_stress, total_stress):
 
@@ -123,6 +125,13 @@ class Model(QObject):
 
         # Create a laminate instance
         self.laminate, self.project_info = read_input_file(filepath=self.input_directory)
+
+    def export_text_file(self, filepath):
+
+        print_obj = FilePrint({'PROJECT_INFO': self.project_info}, filepath=filepath)
+        print_obj.print_project_info()
+        print_obj.print_output_data(self.laminate, load_type=LoadType.thermal)
+        print_obj.print_output_data(self.laminate, load_type=LoadType.combined)
 
 
 
