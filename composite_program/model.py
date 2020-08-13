@@ -1,13 +1,8 @@
-from composite import read_input_file, plot_stress, FilePrint, LoadType, Laminate
+from composite import read_input_file, plot_stress, FilePrint, LoadType, Laminate, Quantity
 from coordinate_systems import CoordinateSystem
 from enum import Enum
 from PyQt5.QtCore import *
 import numpy as np
-
-
-class Quantity(Enum):
-    stress = 1
-    strain = 2
 
 
 class ResultData:
@@ -67,7 +62,6 @@ class Model(QObject):
     def set_project_name(self, name):
         self.project_name = name
         self.project_info['NAME'] = [name]
-        a = 1
 
     def calculate(self, thermal_stress, total_stress):
 
@@ -126,7 +120,7 @@ class Model(QObject):
         # Create a laminate instance
         self.laminate, self.project_info = read_input_file(filepath=self.input_directory)
 
-    def export_text_file(self, filepath):
+    def export_text_file(self, filepath, ):
 
         print_obj = FilePrint({'PROJECT_INFO': self.project_info}, filepath=filepath)
         print_obj.print_project_info()

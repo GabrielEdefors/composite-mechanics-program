@@ -1,5 +1,5 @@
 from pathlib import Path
-from composite import LoadType
+from composite import LoadType, Quantity
 from enum import Enum
 import time
 import math
@@ -65,7 +65,7 @@ class FilePrint:
         file.write('=' * line_len1 + ' ' * margin + title_name + ' ' * margin + line_len2 * '=' + '\n')
         file.write('.' + '\n')
 
-    def print_output_data(self, laminate, load_type: Enum):
+    def print_output_data(self, laminate, load_type):
         """Prints the output data specified by type
 
               :param laminate: Laminate to retrieve data from

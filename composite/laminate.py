@@ -195,6 +195,11 @@ class LoadType(Enum):
         return self.value == other.value
 
 
+class Quantity(Enum):
+    stress = 1
+    strain = 2
+
+
 
 
 

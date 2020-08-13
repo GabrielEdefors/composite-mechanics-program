@@ -1,6 +1,6 @@
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
-from model import Quantity
+from model import Quantity, ResultData
 from coordinate_systems import CoordinateSystem
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
@@ -334,7 +334,7 @@ class CalculateGroup(QGroupBox):
         self.calculate_button.clicked.connect(calculate)
 
         # def calculate_total_stress():
-        #     self.model.calculate_total_stress()
+        # self.model.calculate_total_stress()
         # self.calculate_total_button.clicked.connect(calculate_total_stress)
 
 
@@ -365,10 +365,26 @@ class ExportTextFileWindow(QMainWindow):
         # Set window properties
         self.setWindowTitle('Export Options')
         self.resize(300, 200)
-
         self.layout = QVBoxLayout()
+
+        # Add check boxes for choosing load types to export
+        self.load_type_label = QLabel("Select Which Results to export")
+        self.check_box_thermal = QCheckBox("Results Due to Thermal Loading")
+        self.check_box_total = QCheckBox("Results Due to Combined Loading")
+        self.layout.addWidget(self.load_type_label)
+        self.layout.addWidget(self.check_box_thermal)
+        self.layout.addWidget(self.check_box_total)
+
+        # Disable load type if not calculated
+        if not isinstance(self.model.result_thermal, ResultData):
+            self.check_box_thermal.setEnabled(False)
+        if not isinstance(self.model.result_total, ResultData):
+            self.check_box_total.setEnabled(False)
+
+        # Save button
         self.save_as_button = QPushButton("Save As")
         self.layout.addWidget(self.save_as_button)
+
         self.widget = QWidget()
         self.widget.setLayout(self.layout)
         self.setCentralWidget(self.widget)
