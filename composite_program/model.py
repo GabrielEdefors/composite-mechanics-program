@@ -120,12 +120,15 @@ class Model(QObject):
         # Create a laminate instance
         self.laminate, self.project_info = read_input_file(filepath=self.input_directory)
 
-    def export_text_file(self, filepath, ):
+    def export_text_file(self, filepath, include_thermal=False, include_total=False):
 
         print_obj = FilePrint({'PROJECT_INFO': self.project_info}, filepath=filepath)
         print_obj.print_project_info()
-        print_obj.print_output_data(self.laminate, load_type=LoadType.thermal)
-        print_obj.print_output_data(self.laminate, load_type=LoadType.combined)
+
+        if include_thermal:
+            print_obj.print_output_data(self.laminate, load_type=LoadType.thermal)
+        if include_total:
+            print_obj.print_output_data(self.laminate, load_type=LoadType.combined)
 
 
 

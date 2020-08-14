@@ -1,5 +1,6 @@
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
+from exceptions_errors import *
 from model import Quantity, ResultData
 from coordinate_systems import CoordinateSystem
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
@@ -366,14 +367,19 @@ class ExportTextFileWindow(QMainWindow):
         self.setWindowTitle('Export Options')
         self.resize(300, 200)
         self.layout = QVBoxLayout()
+        self.group_box = QGroupBox("Export Options")
+        self.layout.addWidget(self.group_box)
+        self.setLayout(self.layout)
 
         # Add check boxes for choosing load types to export
-        self.load_type_label = QLabel("Select Which Results to export")
+        self.load_type_label = QLabel("Select Which Results to Export")
         self.check_box_thermal = QCheckBox("Results Due to Thermal Loading")
         self.check_box_total = QCheckBox("Results Due to Combined Loading")
-        self.layout.addWidget(self.load_type_label)
-        self.layout.addWidget(self.check_box_thermal)
-        self.layout.addWidget(self.check_box_total)
+        self.group_box.layout = QVBoxLayout()
+        self.group_box.layout.addWidget(self.load_type_label)
+        self.group_box.layout.addWidget(self.check_box_thermal)
+        self.group_box.layout.addWidget(self.check_box_total)
+        self.group_box.layout.addStretch()
 
         # Disable load type if not calculated
         if not isinstance(self.model.result_thermal, ResultData):
@@ -383,7 +389,9 @@ class ExportTextFileWindow(QMainWindow):
 
         # Save button
         self.save_as_button = QPushButton("Save As")
-        self.layout.addWidget(self.save_as_button)
+        self.group_box.layout.addWidget(self.save_as_button)
+
+        self.group_box.setLayout(self.group_box.layout)
 
         self.widget = QWidget()
         self.widget.setLayout(self.layout)
@@ -394,9 +402,24 @@ class ExportTextFileWindow(QMainWindow):
             self.filepath, self.filetype = QFileDialog.getSaveFileName(self, 'Save As', self.parent.directory,
                                                            "Text Files (*.txt)")
 
-            self.model.export_text_file(self.filepath)
+            if self.check_box_thermal.isChecked() and self.check_box_total.isChecked():
+                self.model.export_text_file(self.filepath, include_thermal=True, include_total=True)
+            if self.check_box_total.isChecked() and not self.check_box_total.isChecked():
+                self.model.export_text_file(self.filepath, include_thermal=True)
+            if not self.check_box_total.isChecked() and self.check_box_total.isChecked():
+                self.model.export_text_file(self.filepath, include_total=True)
+            else:
+                self.no_selection_inform()
 
         self.save_as_button.clicked.connect(save_as)
+
+    @staticmethod
+    def no_selection_inform():
+        message_box = QMessageBox()
+        message_box.setIcon(QMessageBox.Information)
+        message = "No selection made, nothing exported"
+        message_box.setText(message)
+        message_box.exec_()
 
 
 
