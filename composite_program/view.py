@@ -9,6 +9,7 @@ from composite import plot_tools_GUI, LoadType, print_tools
 
 import matplotlib
 import os
+import abc
 
 matplotlib.use('Qt5Agg')
 # -*- coding: utf-8 -*-
@@ -47,10 +48,17 @@ class MainWindow(QMainWindow):
         # Connect menu bar buttons
         def export_textfile():
             # Open a new window containing export options
-            self.export_textfile_window = ExportTextFileWindow(self.model, self)
+            self.export_textfile_window = ExportTextFileWindow(self.model, self, "Export Numerical Results")
             self.export_textfile_window.show()
 
         export_textfile_action.triggered.connect(export_textfile)
+
+        def export_imagefile():
+            # Open a new window containing export options
+            self.export_imagefile_window = ExportImageFileWindow(self.model, self, "Export Graphs")
+            self.export_imagefile_window.show()
+
+        export_graph_action.triggered.connect(export_imagefile)
 
 
 class View(QGroupBox):
@@ -357,14 +365,16 @@ class Canvas(FigureCanvasQTAgg):
         self.axes.set_title(title)
 
 
-class ExportTextFileWindow(QMainWindow):
-    def __init__(self, model, parent):
+class ExportFileWindow(QMainWindow):
+
+    def __init__(self, model, parent, title):
         super().__init__()
         self.model = model
         self.parent = parent
+        self.title = title
 
         # Set window properties
-        self.setWindowTitle('Export Options')
+        self.setWindowTitle(self.title)
         self.resize(300, 200)
         self.layout = QVBoxLayout()
         self.group_box = QGroupBox("Export Options")
@@ -397,21 +407,9 @@ class ExportTextFileWindow(QMainWindow):
         self.widget.setLayout(self.layout)
         self.setCentralWidget(self.widget)
 
-        # Controllers
+        @abc.abstractmethod
         def save_as():
-            self.filepath, self.filetype = QFileDialog.getSaveFileName(self, 'Save As', self.parent.directory,
-                                                           "Text Files (*.txt)")
-
-            if self.check_box_thermal.isChecked() and self.check_box_total.isChecked():
-                self.model.export_text_file(self.filepath, include_thermal=True, include_total=True)
-            if self.check_box_total.isChecked() and not self.check_box_total.isChecked():
-                self.model.export_text_file(self.filepath, include_thermal=True)
-            if not self.check_box_total.isChecked() and self.check_box_total.isChecked():
-                self.model.export_text_file(self.filepath, include_total=True)
-            else:
-                self.no_selection_inform()
-
-        self.save_as_button.clicked.connect(save_as)
+            """"Should implement choosing file and performing export"""""
 
     @staticmethod
     def no_selection_inform():
@@ -420,6 +418,80 @@ class ExportTextFileWindow(QMainWindow):
         message = "No selection made, nothing exported"
         message_box.setText(message)
         message_box.exec_()
+
+
+class ExportTextFileWindow(ExportFileWindow):
+    def __init__(self, model, parent, title):
+        super().__init__(model, parent, title)
+        self.model = model
+        self.parent = parent
+
+        # Controllers
+        def save_as():
+            self.filepath, self.filetype = QFileDialog.getSaveFileName(self, 'Save As', self.parent.directory,
+                                                           "Text Files (*.txt)")
+
+            if self.check_box_thermal.isChecked() and self.check_box_total.isChecked():
+                self.model.export_text_file(self.filepath, include_thermal=True, include_total=True)
+                self.close()
+            elif self.check_box_thermal.isChecked() and not self.check_box_total.isChecked():
+                self.model.export_text_file(self.filepath, include_thermal=True)
+                self.close()
+            elif not self.check_box_thermal.isChecked() and self.check_box_total.isChecked():
+                self.model.export_text_file(self.filepath, include_total=True)
+                self.close()
+            else:
+                self.no_selection_inform()
+
+        self.save_as_button.clicked.connect(save_as)
+
+
+class ExportImageFileWindow(ExportFileWindow):
+    def __init__(self, model, parent, title):
+        super().__init__(model, parent, title)
+        self.model = model
+        self.parent = parent
+
+        # Add combo box menu for choosing local or global coordinate system
+        self.combo_box = QComboBox(self)
+        self.combo_box.addItem("Local Coordinates")
+        self.combo_box.addItem("Global Coordinates")
+        self.group_box.layout.insertWidget(3, self.combo_box)
+
+
+        # Controllers
+        def save_as():
+            self.filepath, self.filetype = QFileDialog.getSaveFileName(self, 'Save As', self.parent.directory,
+                                                           "Image Files (*.png *.jpg *.svg)")
+
+            if self.check_box_thermal.isChecked() and self.check_box_total.isChecked():
+                if self.combo_box.currentText() == "Local Coordinates":
+                    self.model.export_image_file(self.filepath, include_thermal=True, include_total=True,
+                                                 coordinates=CoordinateSystem.LT)
+                    self.close()
+                else:
+                    self.model.export_image_file(self.filepath, include_thermal=True, include_total=True,
+                                                 coordinates=CoordinateSystem.xy)
+                    self.close()
+
+            elif self.check_box_thermal.isChecked() and not self.check_box_total.isChecked():
+                if self.combo_box.currentText() == "Local Coordinates":
+                    self.model.export_image_file(self.filepath, include_thermal=True, coordinates=CoordinateSystem.LT)
+                    self.close()
+                else:
+                    self.model.export_image_file(self.filepath, include_thermal=True, coordinates=CoordinateSystem.xy)
+                    self.close()
+            elif not self.check_box_thermal.isChecked() and self.check_box_total.isChecked():
+                if self.combo_box.currentText() == "Local Coordinates":
+                    self.model.export_image_file(self.filepath, include_total=True, coordinates=CoordinateSystem.LT)
+                    self.close()
+                else:
+                    self.model.export_image_file(self.filepath, include_total=True, coordinates=CoordinateSystem.xy)
+                    self.close()
+            else:
+                self.no_selection_inform()
+
+        self.save_as_button.clicked.connect(save_as)
 
 
 

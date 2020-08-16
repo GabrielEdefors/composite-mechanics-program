@@ -37,3 +37,4 @@ def plot_stress(axes, coordinates, quantity):
 
 
 
+
