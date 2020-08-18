@@ -6,6 +6,7 @@ from coordinate_systems import CoordinateSystem
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
 from composite import plot_tools_GUI, LoadType, print_tools
+from copy import deepcopy
 
 import matplotlib
 import os
@@ -39,26 +40,20 @@ class MainWindow(QMainWindow):
         quit_action = QAction('Quit', self)
         self.file_menu.addAction(quit_action)
 
-        # Actions for Currency menu
+        # Actions for Export menu
         export_textfile_action = QAction('Numerical Results', self)
-        export_graph_action = QAction('Graphs', self)
         self.export_menu.addAction(export_textfile_action)
-        self.export_menu.addAction(export_graph_action)
 
         # Connect menu bar buttons
         def export_textfile():
             # Open a new window containing export options
-            self.export_textfile_window = ExportTextFileWindow(self.model, self, "Export Numerical Results")
+            self.export_textfile_window = ExportTextFileWindow(self.model, self, "Export Numerical Results",
+                                                               "Select Which Results to Export",
+                                                               "Results Due to Thermal Loading",
+                                                               "Results Due to Combined Loading")
             self.export_textfile_window.show()
 
         export_textfile_action.triggered.connect(export_textfile)
-
-        def export_imagefile():
-            # Open a new window containing export options
-            self.export_imagefile_window = ExportImageFileWindow(self.model, self, "Export Graphs")
-            self.export_imagefile_window.show()
-
-        export_graph_action.triggered.connect(export_imagefile)
 
 
 class View(QGroupBox):
@@ -104,14 +99,29 @@ class CanvasGroup(QGroupBox):
         self.layout = QVBoxLayout()
         self.canvas = Canvas(self)
         self.plot_properties = PlotPropertiesGroup(self.model, self)
+        self.save_button = QPushButton('Save Image')
 
-        # Add the properties box and canvas
+        # Add the properties box, canvas and save button
         self.layout.addWidget(self.plot_properties)
         self.layout.addWidget(self.canvas)
+
+        # Save button layout
+        self.save_button_layout = QHBoxLayout()
+        self.save_button_layout.addWidget(self.save_button)
+        self.save_button_layout.addStretch()
+        self.layout.addLayout(self.save_button_layout)
         self.setLayout(self.layout)
         self.canvas.draw()
 
         # Controllers
+        def export_imagefile():
+
+            self.export_window = ExportImageFileWindow(self.model, self, 'Export Image Options', "",
+                                                       "Turn off Grid", "Turn off Frame")
+
+            self.export_window.show()
+
+        self.save_button.clicked.connect(export_imagefile)
 
     def plot_data(self):
 
@@ -137,7 +147,7 @@ class CanvasGroup(QGroupBox):
             array_to_plot = self.model.display_load_type.global_strains
             self.canvas.set_axis_title(self.model.display_load_type.local_strains.strain_type, quantity, self.model.display_component)
 
-        plot_tools_GUI.plot_stress(axes=canvas_axes, coordinates=self.model.z_coordinates, quantity=array_to_plot, component=self.model.display_component)
+        self.canvas.graph = plot_tools_GUI.plot_stress(axes=canvas_axes, coordinates=self.model.z_coordinates, quantity=array_to_plot, component=self.model.display_component)
         self.canvas.figure.tight_layout(w_pad=1)
         self.canvas.draw()
 
@@ -342,10 +352,6 @@ class CalculateGroup(QGroupBox):
             self.model.calculate(calculate_thermal, calculate_total)
         self.calculate_button.clicked.connect(calculate)
 
-        # def calculate_total_stress():
-        # self.model.calculate_total_stress()
-        # self.calculate_total_button.clicked.connect(calculate_total_stress)
-
 
 class Canvas(FigureCanvasQTAgg):
     """ Canvas that hold the stress and strain plots
@@ -367,7 +373,7 @@ class Canvas(FigureCanvasQTAgg):
 
 class ExportFileWindow(QMainWindow):
 
-    def __init__(self, model, parent, title):
+    def __init__(self, model, parent, title, label, checkbox_1, checkbox_2):
         super().__init__()
         self.model = model
         self.parent = parent
@@ -382,20 +388,16 @@ class ExportFileWindow(QMainWindow):
         self.setLayout(self.layout)
 
         # Add check boxes for choosing load types to export
-        self.load_type_label = QLabel("Select Which Results to Export")
-        self.check_box_thermal = QCheckBox("Results Due to Thermal Loading")
-        self.check_box_total = QCheckBox("Results Due to Combined Loading")
+        self.load_type_label = QLabel(label)
+        self.check_box_1 = QCheckBox(checkbox_1)
+        self.check_box_2 = QCheckBox(checkbox_2)
         self.group_box.layout = QVBoxLayout()
         self.group_box.layout.addWidget(self.load_type_label)
-        self.group_box.layout.addWidget(self.check_box_thermal)
-        self.group_box.layout.addWidget(self.check_box_total)
+        self.group_box.layout.addWidget(self.check_box_1)
+        self.group_box.layout.addWidget(self.check_box_2)
         self.group_box.layout.addStretch()
 
-        # Disable load type if not calculated
-        if not isinstance(self.model.result_thermal, ResultData):
-            self.check_box_thermal.setEnabled(False)
-        if not isinstance(self.model.result_total, ResultData):
-            self.check_box_total.setEnabled(False)
+        self.disable_checkboxes()
 
         # Save button
         self.save_as_button = QPushButton("Save As")
@@ -411,6 +413,10 @@ class ExportFileWindow(QMainWindow):
         def save_as():
             """"Should implement choosing file and performing export"""""
 
+    @abc.abstractmethod
+    def disable_checkboxes(self):
+        pass
+
     @staticmethod
     def no_selection_inform():
         message_box = QMessageBox()
@@ -421,8 +427,8 @@ class ExportFileWindow(QMainWindow):
 
 
 class ExportTextFileWindow(ExportFileWindow):
-    def __init__(self, model, parent, title):
-        super().__init__(model, parent, title)
+    def __init__(self, model, parent, title, label, checkbox_1, checkbox_2):
+        super().__init__(model, parent, title, label, checkbox_1, checkbox_2)
         self.model = model
         self.parent = parent
 
@@ -431,13 +437,13 @@ class ExportTextFileWindow(ExportFileWindow):
             self.filepath, self.filetype = QFileDialog.getSaveFileName(self, 'Save As', self.parent.directory,
                                                            "Text Files (*.txt)")
 
-            if self.check_box_thermal.isChecked() and self.check_box_total.isChecked():
+            if self.check_box_1.isChecked() and self.check_box_2.isChecked():
                 self.model.export_text_file(self.filepath, include_thermal=True, include_total=True)
                 self.close()
-            elif self.check_box_thermal.isChecked() and not self.check_box_total.isChecked():
+            elif self.check_box_1.isChecked() and not self.check_box_2.isChecked():
                 self.model.export_text_file(self.filepath, include_thermal=True)
                 self.close()
-            elif not self.check_box_thermal.isChecked() and self.check_box_total.isChecked():
+            elif not self.check_box_1.isChecked() and self.check_box_2.isChecked():
                 self.model.export_text_file(self.filepath, include_total=True)
                 self.close()
             else:
@@ -445,57 +451,55 @@ class ExportTextFileWindow(ExportFileWindow):
 
         self.save_as_button.clicked.connect(save_as)
 
+    def disable_checkboxes(self):
+        # Disable load type if not calculated
+        if not isinstance(self.model.result_thermal, ResultData):
+            self.check_box_1.setEnabled(False)
+        if not isinstance(self.model.result_total, ResultData):
+            self.check_box_2.setEnabled(False)
+
 
 class ExportImageFileWindow(ExportFileWindow):
-    def __init__(self, model, parent, title):
-        super().__init__(model, parent, title)
+    def __init__(self, model, parent, title, label, checkbox_1, checkbox_2):
+        super().__init__(model, parent, title, label, checkbox_1, checkbox_2)
         self.model = model
         self.parent = parent
 
-        # Add combo box menu for choosing local or global coordinate system
+        # Add combo box menu for choosing grid and color
         self.combo_box = QComboBox(self)
-        self.combo_box.addItem("Local Coordinates")
-        self.combo_box.addItem("Global Coordinates")
+        self.combo_box.addItem("Blue")
+        self.combo_box.addItem("Green")
+        self.combo_box.addItem("Red")
         self.group_box.layout.insertWidget(3, self.combo_box)
-
 
         # Controllers
         def save_as():
-            self.filepath, self.filetype = QFileDialog.getSaveFileName(self, 'Save As', self.parent.directory,
-                                                           "Image Files (*.png *.jpg *.svg)")
 
-            if self.check_box_thermal.isChecked() and self.check_box_total.isChecked():
-                if self.combo_box.currentText() == "Local Coordinates":
-                    self.model.export_image_file(self.filepath, include_thermal=True, include_total=True,
-                                                 coordinates=CoordinateSystem.LT)
-                    self.close()
-                else:
-                    self.model.export_image_file(self.filepath, include_thermal=True, include_total=True,
-                                                 coordinates=CoordinateSystem.xy)
-                    self.close()
+            filepath, filetype = QFileDialog.getSaveFileName(self, 'Save As', self.parent.parent.parent.directory,
+                                                             "Image Files (*.png *.jpg *.svg)")
 
-            elif self.check_box_thermal.isChecked() and not self.check_box_total.isChecked():
-                if self.combo_box.currentText() == "Local Coordinates":
-                    self.model.export_image_file(self.filepath, include_thermal=True, coordinates=CoordinateSystem.LT)
-                    self.close()
-                else:
-                    self.model.export_image_file(self.filepath, include_thermal=True, coordinates=CoordinateSystem.xy)
-                    self.close()
-            elif not self.check_box_thermal.isChecked() and self.check_box_total.isChecked():
-                if self.combo_box.currentText() == "Local Coordinates":
-                    self.model.export_image_file(self.filepath, include_total=True, coordinates=CoordinateSystem.LT)
-                    self.close()
-                else:
-                    self.model.export_image_file(self.filepath, include_total=True, coordinates=CoordinateSystem.xy)
-                    self.close()
+            # Create a copy of the canvas displayed in the main window
+            self.canvas_for_exporting = deepcopy(self.canvas)  ### HÄR ÄR DET FEL!!!!!!!!!!!#############
+
+            # Change grid and frame if needed
+            if self.check_box_1.isChecked():
+                self.canvas_for_exporting.axes.grid(True)
+            if self.check_box_2.isChecked():
+                self.canvas_for_exporting.axes.set_frame_on(False)
+
+            if self.combo_box.currentText() == 'Blue':
+                self.canvas_for_exporting.graph.set_color("Blue")
+            elif self.combo_box.currentText() == 'Green':
+                self.canvas_for_exporting.graph.set_color("Green")
             else:
-                self.no_selection_inform()
+                self.canvas_for_exporting.graph.set_color("Red")
+
+            self.canvas_for_exporting.figure.savefig(filepath)
 
         self.save_as_button.clicked.connect(save_as)
 
-
-
-
+    def disable_checkboxes(self):
+        pass
 
 
 

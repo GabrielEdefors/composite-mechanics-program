@@ -131,36 +131,3 @@ class Model(QObject):
             print_obj.print_output_data(self.laminate, load_type=LoadType.thermal)
         if include_total:
             print_obj.print_output_data(self.laminate, load_type=LoadType.combined)
-
-    def export_image_file(self, filepath, include_thermal=False, include_total=False, coordinates=CoordinateSystem.LT):
-
-        axes = plt.subplots(nrows=1, ncols=3, constrained_layout=True, figsize=(10, 7))[1]
-        figure = plt.figure(1)
-
-        if include_thermal:
-            title = 'Stress Distribution Due to Thermal Loading, ' + str(coordinates)
-            figure.suptitle(title, fontsize=16)
-
-            if coordinates == CoordinateSystem.LT:
-                plot_stress(axes=axes, coordinates=self.z_coordinates, quantity=self.result_thermal.local_stress)
-            else:
-                plot_stress(axes=axes, coordinates=self.z_coordinates, quantity=self.result_thermal.global_stress)
-
-        elif include_total:
-            title = 'Stress Distribution Due to Combined Loading, ' + str(coordinates)
-            figure.suptitle(title, fontsize=16)
-
-            if coordinates == CoordinateSystem.LT:
-                plot_stress(axes=axes, coordinates=self.z_coordinates, quantity=self.result_total.local_stress)
-            else:
-                plot_stress(axes=axes, coordinates=self.z_coordinates, quantity=self.result_total.global_stress)
-
-        else:
-            raise NoSelectionError()
-
-        # Save figure
-        plt.show()
-        plt.savefig(filepath)
-
-
-

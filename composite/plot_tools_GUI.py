@@ -19,11 +19,11 @@ def plot_stress(axes, coordinates, quantity, component):
     if isinstance(quantity, StressState):
         x_labels_global = [r'$\sigma_x$' + ' [MPa]', r'$\sigma_y$' + ' [MPa]', r'$\sigma_{xy}$' + ' [MPa]']
         x_labels_local = [r'$\sigma_L$' + ' [MPa]', r'$\sigma_T$' + ' [MPa]', r'$\sigma_{LT}$' + ' [MPa]']
-        axes.plot(quantity.components[component, :] / 1e6, coordinates * 1e3, colors[component])
+        graph = axes.plot(quantity.components[component, :] / 1e6, coordinates * 1e3, colors[component])
     else:
         x_labels_global = [r'$\epsilon_x$' + ' [1e-3]', r'$\epsilon_y$' + ' [1e-3]', r'$\epsilon_{xy}$' + ' [1e-3]']
         x_labels_local = [r'$\epsilon_L$' + ' [1e-3]', r'$\epsilon_T$' + ' [1e-3]', r'$\epsilon_{LT}$' + ' [1e-3]']
-        axes.plot(quantity.components[component, :] * 1e3, coordinates * 1e3, colors[component])
+        graph = axes.plot(quantity.components[component, :] * 1e3, coordinates * 1e3, colors[component])
 
     axes.grid(True)
 
@@ -34,6 +34,8 @@ def plot_stress(axes, coordinates, quantity, component):
         axes.set_xlabel(x_labels_global[component])
     else:
         print("Stress type not supported")
+
+    return graph
 
 
 

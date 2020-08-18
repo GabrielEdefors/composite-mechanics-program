@@ -24,17 +24,29 @@ def plot_stress(axes, coordinates, quantity):
 
     for index, axis in enumerate(axes):
 
-        axis.plot(quantity.components[index, :], coordinates, colors[index])
-        axis.grid(True)
+        if isinstance(quantity, StressState):
+            axis.plot(quantity.components[index, :] / 1e6, coordinates, colors[index])
+            axis.grid(True)
 
-        axis.set_ylabel('z' + "[m]")
-        if quantity.coordinate_system == CoordinateSystem.LT:
-            axis.set_xlabel(x_labels_local[index] + " [Pa]")
-        elif quantity.coordinate_system == CoordinateSystem.xy:
-            axis.set_xlabel(x_labels_global[index] + " [Pa]")
+            axis.set_ylabel('z' + "[m]")
+            if quantity.coordinate_system == CoordinateSystem.LT:
+                axis.set_xlabel(x_labels_local[index] + " [MPa]")
+            elif quantity.coordinate_system == CoordinateSystem.xy:
+                axis.set_xlabel(x_labels_global[index] + " [MPa]")
+            else:
+                print("Stress type not supported")
+
         else:
-            print("Stress type not supported")
+            axis.plot(quantity.components[index, :], coordinates, colors[index])
+            axis.grid(True)
 
+            axis.set_ylabel('z' + "[m]")
+            if quantity.coordinate_system == CoordinateSystem.LT:
+                axis.set_xlabel(x_labels_local[index] + " [-]")
+            elif quantity.coordinate_system == CoordinateSystem.xy:
+                axis.set_xlabel(x_labels_global[index] + " [-]")
+            else:
+                print("Stress type not supported")
 
 
 
