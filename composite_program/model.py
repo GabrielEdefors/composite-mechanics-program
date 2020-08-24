@@ -1,13 +1,26 @@
-from composite import read_input_file, plot_stress, FilePrint, LoadType, Laminate, Quantity
-from coordinate_systems import CoordinateSystem
-import matplotlib.pyplot as plt
-from exceptions_errors import *
-from enum import Enum
-from PyQt5.QtCore import *
 import numpy as np
+from PyQt5.QtCore import *
+
+from composite import read_input_file, FilePrint, LoadType, Laminate, Quantity
+from coordinate_systems import CoordinateSystem
 
 
 class ResultData:
+    """Class for storing the computed results
+
+        :param: stresses_global: Global stresses in the laminate
+        :type stresses_global: ndarray(dtype=float, dim=3,nr_laminae*2)
+        :param: stresses_local: Local stresses in the laminate
+        :type stresses_local: ndarray(dtype=float, dim=3,nr_laminae*2)
+        :param: strains_global: Global strains in the laminate
+        :type strains_global: ndarray(dtype=float, dim=3,nr_laminae*2)
+        :param: strains_local: Local strains in the laminate
+        :type strains_local: ndarray(dtype=float, dim=3,nr_laminae*2)
+        :param: z_coordinates: Z coordinates (two at each interface) at each interface of the laminate
+        :type z_coordinates: ndarray(dtype=float, dim=1,nr_laminae*2)
+
+
+    """
 
     def __init__(self, stresses_global, stresses_local, strains_global,
                  strains_local, z_coordinates):
@@ -24,7 +37,7 @@ class Model(QObject):
     """Class for the top level logic of the program
     """
 
-    # Establish signals
+    # Establish signals to the view
     plot_display_data = pyqtSignal()
 
     def __init__(self):
@@ -34,11 +47,11 @@ class Model(QObject):
         self.project_info = dict()
         self.laminate = Laminate
 
-        # Object to store the different data
+        # Objects to store the computed data
         self.result_thermal = ResultData
         self.result_total = ResultData
 
-        # Attributes that keeps track of what is currently displayed in canvas
+        # Attributes that keeps track of what is currently displayed on the canvas canvas
         self.display_load_type = self.result_thermal
         self.display_quantity = Quantity
         self.display_component = int
@@ -46,6 +59,12 @@ class Model(QObject):
         self.z_coordinates = np.ndarray
 
     def set_display_loadtype(self, load_type: LoadType):
+        """Sets the currently displayed load type
+
+            :param load_type: Load type that should be displayed
+            :type load_type: LoadType Enum
+
+        """
 
         if load_type == LoadType.thermal:
             self.display_load_type = self.result_thermal
@@ -53,10 +72,40 @@ class Model(QObject):
             self.display_load_type = self.result_total
 
     def set_display_coordinates(self, new_coordinates: CoordinateSystem):
+        """Sets the currently displayed coordinates
+
+            :param new_coordinates: Load type that should be displayed
+            :type load_type: LoadType Enum
+
+        """
         self.display_coordinates = new_coordinates
 
-    def set_display_category(self, load_type: ResultData):
-        self.display_load_type = load_type
+    def set_display_category(self, load_category: ResultData):
+        """Sets the currently displayed category
+
+            :param new_coordinates: Category that should be displayed
+            :type load_category: ResultData
+
+        """
+        self.display_load_type = load_category
+
+    def set_display_component(self, component: int):
+        """Sets the currently displayed component
+
+            :param component: Component that should be displayed
+            :type component: int
+
+        """
+        self.display_component = component
+
+    def set_display_quantity(self, quantity: Quantity):
+        """Sets the currently displayed quantity
+
+            :param quantity: quantity that should be displayed
+            :type quantity: int
+
+        """
+        self.display_quantity = quantity
 
     def set_input_directory(self, input_directory):
         self.input_directory = input_directory
@@ -66,13 +115,14 @@ class Model(QObject):
         self.project_info['NAME'] = [name]
 
     def calculate(self, thermal_stress, total_stress):
-
+        """Redirects the signal to calculate to either thermal or total stress methods"""
         if thermal_stress is True:
             self.calculate_thermal_stress()
         if total_stress is True:
             self.calculate_total_stress()
 
     def calculate_thermal_stress(self):
+        """Calculates the thermal stress and stores the results in results_thermal"""
 
         self.laminate.compute_thermal_stress()
         thermal_stresses_global, thermal_stresses_local, thermal_strains_global, \
@@ -91,6 +141,7 @@ class Model(QObject):
         self.plot_display_data.emit()
 
     def calculate_total_stress(self):
+        """Calculates the total stress and stores the results in results_thermal"""
 
         self.laminate.compute_total_stress()
         total_stresses_global, total_stresses_local, total_strains_global, \
@@ -108,21 +159,24 @@ class Model(QObject):
         self.display_load_type = self.result_total
         self.plot_display_data.emit()
 
-    def set_display_component(self, component: int):
-        self.display_component = component
-
-    def set_display_quantity(self, quantity: Quantity):
-        self.display_quantity = quantity
-
     def change_display_coordinates(self, coordinates: CoordinateSystem):
         self.display_coordinates = coordinates
 
     def read_input_file(self):
+        """Reads the input file and create a laminate instance"""
 
         # Create a laminate instance
         self.laminate, self.project_info = read_input_file(filepath=self.input_directory)
 
     def export_text_file(self, filepath, include_thermal=False, include_total=False):
+        """Prints the result specified to a text file
+
+            :param filepath: Filepath of the text file
+            :type filepath: str
+            :param include_thermal: True if should be included, False otherwise
+            :param include_total: True if should be included, False otherwise
+
+        """
 
         print_obj = FilePrint({'PROJECT_INFO': self.project_info}, filepath=filepath)
         print_obj.print_project_info()

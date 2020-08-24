@@ -1,4 +1,4 @@
-"""Package with tools used in composite mechanics mechanics. Currently contains tools based on classical laminate theory.
+"""Package with tools used in composite mechanics. Currently contains tools based on classical laminate theory.
 
 Authors: Gabriel Edefors
 Year: 2020

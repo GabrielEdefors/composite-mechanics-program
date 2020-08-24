@@ -1,33 +1,39 @@
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
-from exceptions_errors import *
-from model import Quantity, ResultData
-from coordinate_systems import CoordinateSystem
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
-from matplotlib.figure import Figure
-from composite import plot_tools_GUI, LoadType, print_tools
-from copy import deepcopy
-
 import matplotlib
 import os
 import abc
+
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
+from matplotlib.figure import Figure
+from PyQt5.QtGui import *
+from PyQt5.QtWidgets import *
+
+from composite import plot_tools_GUI, LoadType
+from coordinate_systems import CoordinateSystem
+from model import Quantity, ResultData
 
 matplotlib.use('Qt5Agg')
 # -*- coding: utf-8 -*-
 
 
 class MainWindow(QMainWindow):
+    """The main window of the GUI
+
+        :param model: Class containing all the logic of the GUI
+        :type model: Instance of Model
+
+    """
     def __init__(self, model):
+
         super().__init__()
         self.model = model
         self.directory = os.path.dirname(os.path.realpath(__file__))
 
         # Set window properties
         self.setWindowTitle('Composite Calculator 2000')
-        self.resize(700, 650)
         self.setWindowIcon(QIcon(self.directory + os.path.sep + 'icon.png'))
+        self.resize(700, 650)
 
-        # View box
+        # Create a group box view holding all subwidgets
         self.view = View(model, self)
         self.setCentralWidget(self.view)
 
@@ -44,7 +50,7 @@ class MainWindow(QMainWindow):
         export_textfile_action = QAction('Numerical Results', self)
         self.export_menu.addAction(export_textfile_action)
 
-        # Connect menu bar buttons
+        # Controllers for the menu bar buttons
         def export_textfile():
             # Open a new window containing export options
             self.export_textfile_window = ExportTextFileWindow(self.model, self, "Export Numerical Results",
@@ -52,12 +58,19 @@ class MainWindow(QMainWindow):
                                                                "Results Due to Thermal Loading",
                                                                "Results Due to Combined Loading")
             self.export_textfile_window.show()
-
         export_textfile_action.triggered.connect(export_textfile)
+
+        quit_action.triggered.connect(self.close)
 
 
 class View(QGroupBox):
-    """ The main window of the GUI
+    """The main group box holding all subgroups
+
+        :param model: Class containing all the logic of the GUI
+        :type model: Instance of Model
+        :param parent: The parent widget of the group box
+        :type parent: QMainWindow
+
     """
 
     def __init__(self, model, parent):
@@ -66,7 +79,7 @@ class View(QGroupBox):
         self.model = model
         self.parent = parent
 
-        # Create subgroups
+        # Create subgroups for canvas and input and calculation options
         self.canvas_group = CanvasGroup(self.model, self)
         self.input_group = InputGroup(self.model, self)
         self.calculate_group = CalculateGroup(self.model, self)
@@ -80,9 +93,19 @@ class View(QGroupBox):
         self.main_layout.addWidget(self.canvas_group)
         self.setLayout(self.main_layout)
 
+    def reset_GUI(self):
+        """Resets all problem specific data"""
+
+        self.canvas_group.plot_properties.reset_load_types()
+        self.canvas_group.canvas.reset_axes()
 
 class CanvasGroup(QGroupBox):
-    """ Group box containing plot and plot properties
+    """ Group box containing canvas object and plot properties group box
+
+        :param model: Class containing all the logic of the GUI
+        :type model: Instance of Model
+        :param parent: The parent widget of the group box
+        :type parent: QGRoupBox
 
     """
 
@@ -92,38 +115,51 @@ class CanvasGroup(QGroupBox):
         self.model = model
         self.parent = parent
 
-        # Connect logic
+        # Connect logic from model
         self.model.plot_display_data.connect(self.plot_data)
 
-        # Contents
-        self.layout = QVBoxLayout()
+        # Create canvas instance and Properties grop box instance
         self.canvas = Canvas(self)
         self.plot_properties = PlotPropertiesGroup(self.model, self)
-        self.save_button = QPushButton('Save Image')
 
-        # Add the properties box, canvas and save button
+        # Add the properties box and canvas
+        self.layout = QVBoxLayout()
         self.layout.addWidget(self.plot_properties)
         self.layout.addWidget(self.canvas)
 
-        # Save button layout
-        self.save_button_layout = QHBoxLayout()
-        self.save_button_layout.addWidget(self.save_button)
-        self.save_button_layout.addStretch()
-        self.layout.addLayout(self.save_button_layout)
+        # Horizontal layout beneath the canvas
+        self.save_button = QPushButton('Save Image')
+        self.grid_option_box = QComboBox(self)
+        self.grid_option_box.addItem('Grid Off')
+        self.grid_option_box.addItem('Grid On')
+        self.bottom_horizontal_layout = QHBoxLayout()
+        self.bottom_horizontal_layout.addWidget(self.grid_option_box)
+        self.bottom_horizontal_layout.addWidget(self.save_button)
+        self.bottom_horizontal_layout.addStretch()
+
+        # Add the the bottom layout to the main layout
+        self.layout.addLayout(self.bottom_horizontal_layout)
         self.setLayout(self.layout)
+
+        # Finally dray the canvas
         self.canvas.draw()
 
-        # Controllers
+        # Controllers for save button and grid combo box
         def export_imagefile():
 
-            self.export_window = ExportImageFileWindow(self.model, self, 'Export Image Options', "",
-                                                       "Turn off Grid", "Turn off Frame")
-
-            self.export_window.show()
-
+            filepath, filetype = QFileDialog.getSaveFileName(self, 'Save As', self.parent.parent.directory,
+                                                             "Image Files (*.png *.jpg *.svg)")
+            self.canvas.figure.savefig(filepath)
         self.save_button.clicked.connect(export_imagefile)
 
-    def plot_data(self):
+        def change_grid_settings():
+            if self.grid_option_box.currentText() == 'Grid On':
+                self.plot_data(grid=True)
+            else:
+                self.plot_data(grid=False)
+        self.grid_option_box.activated.connect(change_grid_settings)
+
+    def plot_data(self, grid=False):
 
         # Empty canvas axis
         self.canvas.reset_axes()
@@ -149,11 +185,17 @@ class CanvasGroup(QGroupBox):
 
         self.canvas.graph = plot_tools_GUI.plot_stress(axes=canvas_axes, coordinates=self.model.z_coordinates, quantity=array_to_plot, component=self.model.display_component)
         self.canvas.figure.tight_layout(w_pad=1)
+        self.canvas.axes.grid(grid)
         self.canvas.draw()
 
 
 class PlotPropertiesGroup(QGroupBox):
     """ Group box containing plot properties
+
+        :param model: Class containing all the logic of the GUI
+        :type model: Instance of Model
+        :param parent: The parent widget of the group box
+        :type parent: QGroupBox
 
     """
 
@@ -163,6 +205,7 @@ class PlotPropertiesGroup(QGroupBox):
         self.model = model
         self.parent = parent
 
+        # Hide box boundaries
         self.setFlat(True)
 
         # Add buttons
@@ -177,7 +220,7 @@ class PlotPropertiesGroup(QGroupBox):
         self.combo_box_loadtype.addItem("Select Load Case")
         self.horizontal_layout.addWidget(self.combo_box_loadtype)
 
-        # Add drop down menu for tensor components
+        # Add drop down menu for choosing tensor components
         self.combo_box_component = QComboBox(self)
         self.combo_box_component.addItem("\u03C3\u2081")
         self.combo_box_component.addItem("\u03C3\u2082")
@@ -186,10 +229,11 @@ class PlotPropertiesGroup(QGroupBox):
         self.combo_box_component.addItem("\u03B5\u2082")
         self.combo_box_component.addItem("\u03B5\u2083")
         self.horizontal_layout.addWidget(self.combo_box_component)
+        self.horizontal_layout.addStretch()
 
         self.setLayout(self.horizontal_layout)
 
-        # Controllers
+        # Controllers for buttons and combo boxes
         def change_component():
 
             if self.combo_box_component.currentText() == "\u03C3\u2081":
@@ -211,9 +255,8 @@ class PlotPropertiesGroup(QGroupBox):
                 self.model.set_display_component(2)
                 self.model.set_display_quantity(Quantity.strain)
 
-            # Redraw canvass
+            # Redraw canvas
             self.parent.parent.canvas_group.plot_data()
-
         self.combo_box_component.currentIndexChanged.connect(change_component)
 
         def change_loadtype():
@@ -232,7 +275,6 @@ class PlotPropertiesGroup(QGroupBox):
 
             # Redraw canvas
             self.parent.parent.canvas_group.plot_data()
-
         self.local_button.clicked.connect(display_local_coordinates)
 
         def display_global_coordinates():
@@ -240,19 +282,35 @@ class PlotPropertiesGroup(QGroupBox):
 
             # Redraw canvas
             self.parent.parent.canvas_group.plot_data()
-
         self.global_button.clicked.connect(display_global_coordinates)
 
     def add_load_types(self, load_type: LoadType):
+        """Adds items to the load type combo box based on available results
+
+            :param load_type: Load type to be added
+            :type load_type: LoadType Enum
+
+        """
 
         if load_type == LoadType.thermal:
             self.combo_box_loadtype.addItem("Thermal")
         else:
             self.combo_box_loadtype.addItem("Combined")
 
+    def reset_load_types(self):
+        """Removes all but first Item of the combo box"""
+
+        while self.combo_box_loadtype.count() > 1:
+            self.combo_box_loadtype.removeItem(self.combo_box_loadtype.count()-1)
 
 class InputGroup(QGroupBox):
-    """ Group box containing input text boxes
+    """ Group box containing input options widgets
+
+        :param model: Class containing all the logic of the GUI
+        :type model: Instance of Model
+        :param parent: The parent widget of the group box
+        :type parent: QGroupBox
+
     """
 
     def __init__(self, model, parent):
@@ -279,7 +337,7 @@ class InputGroup(QGroupBox):
         self.main_layout.addLayout(self.line_edit_layout)
         self.setLayout(self.main_layout)
 
-        # Controllers
+        # Controllers for input file button and project name line edit
         def select_file():
 
             # Prompt for filepath
@@ -293,7 +351,6 @@ class InputGroup(QGroupBox):
             self.model.set_input_directory(filepath)
             self.model.set_project_name(self.filename)
             self.model.read_input_file()
-
         self.input_file_button.clicked.connect(select_file)
 
         def update_project_name():
@@ -307,18 +364,30 @@ class InputGroup(QGroupBox):
             # Set new placeholder
             self.update_placeholder_text(self.filename)
             self.delete_text()
-
         self.input_project_name.returnPressed.connect(update_project_name)
 
     def update_placeholder_text(self, new_text):
+        """Updates the text displayed in the project name line edit
+
+            param new_text: Text to be displayed
+            type new_text: str
+
+        """
         self.input_project_name.setPlaceholderText(new_text)
 
     def delete_text(self):
+        """Deletes the text displayed in the project name line edit
+        """
         self.input_project_name.setText("")
 
 
 class CalculateGroup(QGroupBox):
     """ Group box containing calculation options
+
+        :param model: Class containing all the logic of the GUI
+        :type model: Instance of Model
+        :param parent: The parent widget of the group box
+        :type parent: QGroupBox
     """
 
     def __init__(self, model, parent):
@@ -329,6 +398,7 @@ class CalculateGroup(QGroupBox):
 
         self.layout = QVBoxLayout()
 
+        # Add check boxes for choosing what to calculate
         self.check_box_thermal = QCheckBox("Calculate Results Due to Thermal Loading")
         self.check_box_total = QCheckBox("Calculate Results Due to Combined Loading")
         self.calculate_button = QPushButton("Calculate")
@@ -336,11 +406,16 @@ class CalculateGroup(QGroupBox):
         self.layout.addWidget(self.check_box_total)
         self.layout.addWidget(self.calculate_button)
 
+        # Add the widgets to the top of the group box
         self.setLayout(self.layout)
         self.layout.addStretch(1)
 
-        # Controllers
+        # Controllers for calculation button
         def calculate():
+
+            # Reset GUI
+            self.parent.reset_GUI()
+
             calculate_thermal = False
             calculate_total = False
             if self.check_box_thermal.isChecked() is True:
@@ -355,23 +430,53 @@ class CalculateGroup(QGroupBox):
 
 class Canvas(FigureCanvasQTAgg):
     """ Canvas that hold the stress and strain plots
+
+        :param parent: The parent widget of the group box
+        :type parent: QGroupBox
+
     """
 
     def __init__(self, parent):
         self.parent = parent
+
+        # Create a figure and populate with a subplot
         self.figure = Figure()
         self.axes = self.figure.add_subplot(111)
+
         super(Canvas, self).__init__(self.figure)
 
     def reset_axes(self):
+        """Clears the content of the axes"""
         self.axes.clear()
 
     def set_axis_title(self, load_type, quantity, component):
+        """Sets the title of the axes based on load type, quatity and component
+
+            :param load_type: Load type plotted
+            :type load_type: LoadType
+            :param quantity: Quantity plotted (stress or strain)
+            :type quantity: Quantity
+            :param component: Component plotted
+            :type component: int
+
+        """
         title = load_type.name.capitalize() + ' ' + quantity.name + ', component ' + str(component + 1)
         self.axes.set_title(title)
 
 
 class ExportFileWindow(QMainWindow):
+    """ A general export window containing check boxes and a button
+
+        :param model: Class containing all the logic of the GUI
+        :type model: Instance of Model
+        :param parent: The parent widget of the group box
+        :type parent: QGroupBox
+        :param title: Title of the window
+        :param label: String to be displayed in the label above the check boxes
+        :param checkbox_1: String to be displayed in the upper check box
+        :param checkbox_2: String to be displayed in the lower check box
+
+    """
 
     def __init__(self, model, parent, title, label, checkbox_1, checkbox_2):
         super().__init__()
@@ -397,6 +502,7 @@ class ExportFileWindow(QMainWindow):
         self.group_box.layout.addWidget(self.check_box_2)
         self.group_box.layout.addStretch()
 
+        # Disable check boxes based on available results
         self.disable_checkboxes()
 
         # Save button
@@ -404,7 +510,6 @@ class ExportFileWindow(QMainWindow):
         self.group_box.layout.addWidget(self.save_as_button)
 
         self.group_box.setLayout(self.group_box.layout)
-
         self.widget = QWidget()
         self.widget.setLayout(self.layout)
         self.setCentralWidget(self.widget)
@@ -415,10 +520,12 @@ class ExportFileWindow(QMainWindow):
 
     @abc.abstractmethod
     def disable_checkboxes(self):
+        """should disable checkboxes based on availability of results"""
         pass
 
     @staticmethod
     def no_selection_inform():
+        """Displays a message box informing that no selection has been made"""
         message_box = QMessageBox()
         message_box.setIcon(QMessageBox.Information)
         message = "No selection made, nothing exported"
@@ -427,12 +534,25 @@ class ExportFileWindow(QMainWindow):
 
 
 class ExportTextFileWindow(ExportFileWindow):
+    """Window for exporting text files of the results
+
+        :param model: Class containing all the logic of the GUI
+        :type model: Instance of Model
+        :param parent: The parent widget of the group box
+        :type parent: QGroupBox
+        :param title: Title of the window
+        :param label: String to be displayed in the label above the check boxes
+        :param checkbox_1: String to be displayed in the upper check box
+        :param checkbox_2: String to be displayed in the lower check box
+
+    """
+
     def __init__(self, model, parent, title, label, checkbox_1, checkbox_2):
         super().__init__(model, parent, title, label, checkbox_1, checkbox_2)
         self.model = model
         self.parent = parent
 
-        # Controllers
+        # Controller for the save as button
         def save_as():
             self.filepath, self.filetype = QFileDialog.getSaveFileName(self, 'Save As', self.parent.directory,
                                                            "Text Files (*.txt)")
@@ -448,58 +568,17 @@ class ExportTextFileWindow(ExportFileWindow):
                 self.close()
             else:
                 self.no_selection_inform()
-
         self.save_as_button.clicked.connect(save_as)
 
+    # Implementation of disabling checkboxes
     def disable_checkboxes(self):
-        # Disable load type if not calculated
+        """Disables load type if no results exist"""
+
         if not isinstance(self.model.result_thermal, ResultData):
             self.check_box_1.setEnabled(False)
         if not isinstance(self.model.result_total, ResultData):
             self.check_box_2.setEnabled(False)
 
-
-class ExportImageFileWindow(ExportFileWindow):
-    def __init__(self, model, parent, title, label, checkbox_1, checkbox_2):
-        super().__init__(model, parent, title, label, checkbox_1, checkbox_2)
-        self.model = model
-        self.parent = parent
-
-        # Add combo box menu for choosing grid and color
-        self.combo_box = QComboBox(self)
-        self.combo_box.addItem("Blue")
-        self.combo_box.addItem("Green")
-        self.combo_box.addItem("Red")
-        self.group_box.layout.insertWidget(3, self.combo_box)
-
-        # Controllers
-        def save_as():
-
-            filepath, filetype = QFileDialog.getSaveFileName(self, 'Save As', self.parent.parent.parent.directory,
-                                                             "Image Files (*.png *.jpg *.svg)")
-
-            # Create a copy of the canvas displayed in the main window
-            self.canvas_for_exporting = deepcopy(self.canvas)  ### HÄR ÄR DET FEL!!!!!!!!!!!#############
-
-            # Change grid and frame if needed
-            if self.check_box_1.isChecked():
-                self.canvas_for_exporting.axes.grid(True)
-            if self.check_box_2.isChecked():
-                self.canvas_for_exporting.axes.set_frame_on(False)
-
-            if self.combo_box.currentText() == 'Blue':
-                self.canvas_for_exporting.graph.set_color("Blue")
-            elif self.combo_box.currentText() == 'Green':
-                self.canvas_for_exporting.graph.set_color("Green")
-            else:
-                self.canvas_for_exporting.graph.set_color("Red")
-
-            self.canvas_for_exporting.figure.savefig(filepath)
-
-        self.save_as_button.clicked.connect(save_as)
-
-    def disable_checkboxes(self):
-        pass
 
 
 

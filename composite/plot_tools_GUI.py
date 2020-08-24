@@ -25,8 +25,6 @@ def plot_stress(axes, coordinates, quantity, component):
         x_labels_local = [r'$\epsilon_L$' + ' [1e-3]', r'$\epsilon_T$' + ' [1e-3]', r'$\epsilon_{LT}$' + ' [1e-3]']
         graph = axes.plot(quantity.components[component, :] * 1e3, coordinates * 1e3, colors[component])
 
-    axes.grid(True)
-
     axes.set_ylabel('z ' + "[mm]")
     if quantity.coordinate_system == CoordinateSystem.LT:
         axes.set_xlabel(x_labels_local[component])
