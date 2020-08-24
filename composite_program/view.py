@@ -33,7 +33,7 @@ class MainWindow(QMainWindow):
         self.setWindowIcon(QIcon(self.directory + os.path.sep + 'icon.png'))
         self.resize(700, 650)
 
-        # Create a group box view holding all subwidgets
+        # Create a group box view holding all sub widgets
         self.view = View(model, self)
         self.setCentralWidget(self.view)
 

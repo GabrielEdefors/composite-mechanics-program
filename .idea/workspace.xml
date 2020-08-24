@@ -1,12 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="247bc7d5-3dce-48db-a2a4-d60928bdd932" name="Default Changelist" comment="">
+    <list default="true" id="247bc7d5-3dce-48db-a2a4-d60928bdd932" name="Default Changelist" comment="Changed behavior of window for exporting images, added idea folder to gitignore">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/composite/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/composite/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/composite/plot_tools_GUI.py" beforeDir="false" afterPath="$PROJECT_DIR$/composite/plot_tools_GUI.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/composite_program/model.py" beforeDir="false" afterPath="$PROJECT_DIR$/composite_program/model.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/composite_program/view.py" beforeDir="false" afterPath="$PROJECT_DIR$/composite_program/view.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -47,33 +43,10 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/composite_program/view.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="552">
-              <caret line="62" column="49" selection-start-line="62" selection-start-column="49" selection-end-line="62" selection-end-column="49" />
+            <state relative-caret-position="69">
+              <caret line="35" column="50" selection-start-line="35" selection-start-column="50" selection-end-line="35" selection-end-column="50" />
               <folding>
                 <element signature="e#0#17#0" expanded="true" />
-                <element signature="e#1506#1999#0" />
-                <element signature="e#2927#6132#0" />
-                <element signature="e#3947#4423#0" />
-                <element signature="e#4540#4694#0" />
-                <element signature="e#4260#5838#0" />
-                <element signature="e#8669#9891#0" />
-                <element signature="e#10017#10359#0" />
-                <element signature="e#10491#10631#0" />
-                <element signature="e#10757#10897#0" />
-                <element signature="e#11296#11454#0" />
-                <element signature="e#11767#11860#0" />
-                <element signature="e#9855#12018#0" />
-                <element signature="e#12893#13424#0" />
-                <element signature="e#12822#13129#0" />
-                <element signature="e#13960#14012#0" />
-                <element signature="e#14120#14235#0" />
-                <element signature="e#12058#13368#0" />
-                <element signature="e#13408#13911#0" />
-                <element signature="e#16479#16496#0" />
-                <element signature="e#16613#16743#0" />
-                <element signature="e#17147#18880#0" />
-                <element signature="e#19674#21133#0" />
-                <element signature="e#17377#18212#0" />
               </folding>
             </state>
           </provider>
@@ -82,25 +55,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/composite_program/model.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1163">
-              <caret line="170" column="85" selection-start-line="170" selection-start-column="85" selection-end-line="170" selection-end-column="85" />
-              <folding>
-                <element signature="e#0#18#0" expanded="true" />
-                <element signature="e#198#758#0" />
-                <element signature="e#2203#2362#0" />
-                <element signature="e#2605#2647#0" />
-                <element signature="e#2909#2943#0" />
-                <element signature="e#3190#3401#0" />
-                <element signature="e#3461#3493#0" />
-                <element signature="e#1953#1991#0" />
-                <element signature="e#2039#2106#0" />
-                <element signature="e#3399#3634#0" />
-                <element signature="e#3694#4503#0" />
-                <element signature="e#4637#5535#0" />
-                <element signature="e#5623#5661#0" />
-                <element signature="e#6202#6320#0" />
-                <element signature="e#6483#6821#0" />
-              </folding>
+            <state relative-caret-position="3762">
+              <caret line="172" selection-start-line="172" selection-end-line="172" />
             </state>
           </provider>
         </entry>
@@ -239,6 +195,12 @@
               <item name="composite mechanics" type="b2602c69:ProjectViewProjectNode" />
               <item name="composite mechanics" type="462c0819:PsiDirectoryNode" />
               <item name="composite" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="composite mechanics" type="b2602c69:ProjectViewProjectNode" />
+              <item name="composite mechanics" type="462c0819:PsiDirectoryNode" />
+              <item name="composite" type="462c0819:PsiDirectoryNode" />
+              <item name=".idea" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="composite mechanics" type="b2602c69:ProjectViewProjectNode" />
@@ -557,7 +519,14 @@
       <option name="project" value="LOCAL" />
       <updated>1597773140786</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="Changed behavior of window for exporting images, added idea folder to gitignore">
+      <created>1598286229464</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1598286229465</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -603,7 +572,8 @@
     <MESSAGE value="Added logic to check boxes for choosing load types" />
     <MESSAGE value="Added window for exporting images" />
     <MESSAGE value="Changed behavior of window for exporting images" />
-    <option name="LAST_COMMIT_MESSAGE" value="Changed behavior of window for exporting images" />
+    <MESSAGE value="Changed behavior of window for exporting images, added idea folder to gitignore" />
+    <option name="LAST_COMMIT_MESSAGE" value="Changed behavior of window for exporting images, added idea folder to gitignore" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -999,57 +969,17 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/composite_program/model.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1163">
-          <caret line="170" column="85" selection-start-line="170" selection-start-column="85" selection-end-line="170" selection-end-column="85" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-            <element signature="e#198#758#0" />
-            <element signature="e#2203#2362#0" />
-            <element signature="e#2605#2647#0" />
-            <element signature="e#2909#2943#0" />
-            <element signature="e#3190#3401#0" />
-            <element signature="e#3461#3493#0" />
-            <element signature="e#1953#1991#0" />
-            <element signature="e#2039#2106#0" />
-            <element signature="e#3399#3634#0" />
-            <element signature="e#3694#4503#0" />
-            <element signature="e#4637#5535#0" />
-            <element signature="e#5623#5661#0" />
-            <element signature="e#6202#6320#0" />
-            <element signature="e#6483#6821#0" />
-          </folding>
+        <state relative-caret-position="3762">
+          <caret line="172" selection-start-line="172" selection-end-line="172" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/composite_program/view.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="552">
-          <caret line="62" column="49" selection-start-line="62" selection-start-column="49" selection-end-line="62" selection-end-column="49" />
+        <state relative-caret-position="69">
+          <caret line="35" column="50" selection-start-line="35" selection-start-column="50" selection-end-line="35" selection-end-column="50" />
           <folding>
             <element signature="e#0#17#0" expanded="true" />
-            <element signature="e#1506#1999#0" />
-            <element signature="e#2927#6132#0" />
-            <element signature="e#3947#4423#0" />
-            <element signature="e#4540#4694#0" />
-            <element signature="e#4260#5838#0" />
-            <element signature="e#8669#9891#0" />
-            <element signature="e#10017#10359#0" />
-            <element signature="e#10491#10631#0" />
-            <element signature="e#10757#10897#0" />
-            <element signature="e#11296#11454#0" />
-            <element signature="e#11767#11860#0" />
-            <element signature="e#9855#12018#0" />
-            <element signature="e#12893#13424#0" />
-            <element signature="e#12822#13129#0" />
-            <element signature="e#13960#14012#0" />
-            <element signature="e#14120#14235#0" />
-            <element signature="e#12058#13368#0" />
-            <element signature="e#13408#13911#0" />
-            <element signature="e#16479#16496#0" />
-            <element signature="e#16613#16743#0" />
-            <element signature="e#17147#18880#0" />
-            <element signature="e#19674#21133#0" />
-            <element signature="e#17377#18212#0" />
           </folding>
         </state>
       </provider>
