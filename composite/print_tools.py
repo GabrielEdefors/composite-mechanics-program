@@ -1,8 +1,11 @@
-from pathlib import Path
-from composite import LoadType, Quantity
-from enum import Enum
 import time
 import math
+from pathlib import Path
+
+import xlwt
+from xlwt import Workbook
+
+from composite import LoadType
 
 
 class FilePrint:
@@ -71,7 +74,7 @@ class FilePrint:
               :param laminate: Laminate to retrieve data from
               :type laminate: Instance of Laminate
               :param load_type: Stress or strain type, either total or thermal
-              :type load_type: str
+              :type load_type: LoadType
 
         """
 
@@ -168,6 +171,65 @@ class FilePrint:
                               f'{data[4]:>{self.column_width}}{data[5]:>{self.column_width}}' + '\n'
 
         return data_string
+
+
+class ExcelPrint:
+    """Manages parameters and methods for writing results to an Excel file
+
+          :param info: Project info to include in the file
+          :type info: Dict
+          :param filename: Name of the file excluding file type
+          :type filename: string
+
+     """
+
+    def __init__(self, info, filepath):
+        self.filepath = filepath
+        self.info = info
+        self.workbook = Workbook()
+
+        # Add a sheet with project info
+        sheet_project_info = self.workbook.add_sheet('Project Info')
+        for i, (key, value) in enumerate(self.info['PROJECT_INFO'].items()):
+            sheet_project_info.write(i, 0, key)
+            sheet_project_info.write(i, 1, value[0])
+        self.workbook.save(self.filepath)
+
+    def write_data(self, laminate, load_type):
+        """Writes the data specified by type
+
+              :param laminate: Laminate to retrieve data from
+              :type laminate: Instance of Laminate
+              :param load_type: Stress or strain type, either total or thermal
+              :type load_type: LoadType
+
+        """
+
+        # Add sheet corresponding to the load type
+        sheet_name = load_type.name
+        strain_sheet = self.workbook.add_sheet(sheet_name + ' strain data')
+        stress_sheet = self.workbook.add_sheet(sheet_name + ' stress data')
+
+        # Add column headers
+        strain_headers = ['INDEX', 'ANGLE', 'Z-COORDINATE', 'STRESS_X', 'STRESS_L', 'STRESS_Y',
+                          'STRESS_T',  'STRESS_XY', 'STRESS_LT']
+        stress_headers = ['INDEX', 'ANGLE', 'Z-COORDINATE', 'STRAIN_X', 'STRAIN_L', 'STRAIN_Y',
+                          'STRAIN_T',  'STRAIN_XY', 'STRAIN_LT']
+
+        for i, (strain_header, stress_header) in enumerate(zip(strain_headers, stress_headers)):
+            strain_sheet.write(0, i, strain_header)
+            stress_sheet.write(0, i, strain_header)
+
+        self.workbook.save(self.filepath)
+
+
+
+
+
+
+
+
+
 
 
 

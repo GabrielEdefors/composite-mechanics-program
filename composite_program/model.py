@@ -1,7 +1,7 @@
 import numpy as np
 from PyQt5.QtCore import *
 
-from composite import read_input_file, FilePrint, LoadType, Laminate, Quantity
+from composite import read_input_file, FilePrint, LoadType, Laminate, Quantity, ExcelPrint
 from coordinate_systems import CoordinateSystem
 
 
@@ -185,3 +185,20 @@ class Model(QObject):
             print_obj.print_output_data(self.laminate, load_type=LoadType.thermal)
         if include_total:
             print_obj.print_output_data(self.laminate, load_type=LoadType.combined)
+
+    def export_Excel_file(self, filepath, include_thermal=False, include_total=False):
+        """Prints the result specified to an Excel workbook
+
+            :param filepath: Filepath of the text file
+            :type filepath: str
+            :param include_thermal: True if should be included, False otherwise
+            :param include_total: True if should be included, False otherwise
+
+        """
+
+        print_object = ExcelPrint({'PROJECT_INFO': self.project_info}, filepath)
+
+        if include_thermal:
+            print_object.write_data(self.laminate, load_type=LoadType.thermal)
+        if include_total:
+            print_object.write_data(self.laminate, load_type=LoadType.combined)

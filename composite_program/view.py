@@ -47,18 +47,29 @@ class MainWindow(QMainWindow):
         self.file_menu.addAction(quit_action)
 
         # Actions for Export menu
-        export_textfile_action = QAction('Numerical Results', self)
+        export_textfile_action = QAction('Text file', self)
+        export_Excelfile_action = QAction('Excel file', self)
         self.export_menu.addAction(export_textfile_action)
+        self.export_menu.addAction(export_Excelfile_action)
 
         # Controllers for the menu bar buttons
         def export_textfile():
             # Open a new window containing export options
-            self.export_textfile_window = ExportTextFileWindow(self.model, self, "Export Numerical Results",
+            self.export_textfile_window = ExportTextFileWindow(self.model, self, "Export Text File",
                                                                "Select Which Results to Export",
                                                                "Results Due to Thermal Loading",
                                                                "Results Due to Combined Loading")
             self.export_textfile_window.show()
         export_textfile_action.triggered.connect(export_textfile)
+
+        def export_excelfile():
+            # Open a new window containing export options
+            self.export_Excelfile_window = ExportExcelFileWindow(self.model, self, "Export Excel File",
+                                                               "Select Which Results to Export",
+                                                               "Results Due to Thermal Loading",
+                                                               "Results Due to Combined Loading")
+            self.export_Excelfile_window.show()
+        export_Excelfile_action.triggered.connect(export_excelfile)
 
         quit_action.triggered.connect(self.close)
 
@@ -565,6 +576,53 @@ class ExportTextFileWindow(ExportFileWindow):
                 self.close()
             elif not self.check_box_1.isChecked() and self.check_box_2.isChecked():
                 self.model.export_text_file(self.filepath, include_total=True)
+                self.close()
+            else:
+                self.no_selection_inform()
+        self.save_as_button.clicked.connect(save_as)
+
+    # Implementation of disabling checkboxes
+    def disable_checkboxes(self):
+        """Disables load type if no results exist"""
+
+        if not isinstance(self.model.result_thermal, ResultData):
+            self.check_box_1.setEnabled(False)
+        if not isinstance(self.model.result_total, ResultData):
+            self.check_box_2.setEnabled(False)
+
+
+class ExportExcelFileWindow(ExportFileWindow):
+    """Window for exporting text files of the results
+
+        :param model: Class containing all the logic of the GUI
+        :type model: Instance of Model
+        :param parent: The parent widget of the group box
+        :type parent: QGroupBox
+        :param title: Title of the window
+        :param label: String to be displayed in the label above the check boxes
+        :param checkbox_1: String to be displayed in the upper check box
+        :param checkbox_2: String to be displayed in the lower check box
+
+    """
+
+    def __init__(self, model, parent, title, label, checkbox_1, checkbox_2):
+        super().__init__(model, parent, title, label, checkbox_1, checkbox_2)
+        self.model = model
+        self.parent = parent
+
+        # Controller for the save as button
+        def save_as():
+            self.filepath, self.filetype = QFileDialog.getSaveFileName(self, 'Save As', self.parent.directory,
+                                                           "Excel Workbook (*.xls)")
+
+            if self.check_box_1.isChecked() and self.check_box_2.isChecked():
+                self.model.export_Excel_file(self.filepath, include_thermal=True, include_total=True)
+                self.close()
+            elif self.check_box_1.isChecked() and not self.check_box_2.isChecked():
+                self.model.export_Excel_file(self.filepath, include_thermal=True)
+                self.close()
+            elif not self.check_box_1.isChecked() and self.check_box_2.isChecked():
+                self.model.export_Excel_file(self.filepath, include_total=True)
                 self.close()
             else:
                 self.no_selection_inform()

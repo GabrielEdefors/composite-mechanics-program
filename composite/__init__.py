@@ -13,5 +13,5 @@ from . laminate import Laminate, LoadType, Quantity
 from . parser import read_input_file
 from . material import Material
 from . plot_tools import plot_stress
-from . print_tools import FilePrint
+from . print_tools import FilePrint, ExcelPrint
 
