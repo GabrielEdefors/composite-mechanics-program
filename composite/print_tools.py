@@ -5,7 +5,7 @@ from pathlib import Path
 import xlwt
 from xlwt import Workbook
 
-from composite import LoadType
+from composite import LoadType, Quantity
 
 
 class FilePrint:
@@ -195,6 +195,36 @@ class ExcelPrint:
             sheet_project_info.write(i, 1, value[0])
         self.workbook.save(self.filepath)
 
+    def extract_lamina_data(self, lamina, load_type, quantity):
+        """Extracts the data for the current lamina"""
+
+        lamina_data = []
+
+        for i in range(2):
+            z = lamina.coordinates[i]
+            angle = lamina.angle
+            lamina_data.append([lamina.index, angle, z])
+
+            for j in range(3):
+
+                if load_type == LoadType.combined:
+                    if quantity == Quantity.stress:
+                        lamina_data[i].append(lamina.global_properties.total_stress.components[j, i])
+                        lamina_data[i].append(lamina.local_properties.total_stress.components[j, i])
+                    else:
+                        lamina_data[i].append(lamina.global_properties.total_strain.components[j, i])
+                        lamina_data[i].append(lamina.local_properties.total_strain.components[j, i])
+
+                else:
+                    if quantity == Quantity.stress:
+                        lamina_data[i].append(lamina.global_properties.thermal_stress.components[j, i])
+                        lamina_data[i].append(lamina.local_properties.thermal_stress.components[j, i])
+                    else:
+                        lamina_data[i].append(lamina.global_properties.thermal_strain.components[j, i])
+                        lamina_data[i].append(lamina.local_properties.thermal_strain.components[j, i])
+
+        return lamina_data
+
     def write_data(self, laminate, load_type):
         """Writes the data specified by type
 
@@ -218,7 +248,18 @@ class ExcelPrint:
 
         for i, (strain_header, stress_header) in enumerate(zip(strain_headers, stress_headers)):
             strain_sheet.write(0, i, strain_header)
-            stress_sheet.write(0, i, strain_header)
+            stress_sheet.write(0, i, stress_header)
+
+        # Plot the stress for each lamina
+        for k, lamina in enumerate(laminate.laminae):
+
+            lamina_data_strain = self.extract_lamina_data(lamina, load_type, Quantity.strain)
+            lamina_data_stress = self.extract_lamina_data(lamina, load_type, Quantity.stress)
+
+            for i in range(2):
+                for j, (column_strain_data, column_stress_data) in enumerate(zip(lamina_data_strain[i], lamina_data_stress[i])):
+                    strain_sheet.write(2 * k + 1 + i, j, column_strain_data)
+                    stress_sheet.write(2 * k + 1 + i, j, column_stress_data)
 
         self.workbook.save(self.filepath)
 
